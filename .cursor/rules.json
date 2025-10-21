@@ -1,0 +1,91 @@
+{
+  "version": "2.1.0",
+  "rules": [
+    {
+      "name": "Developer Control",
+      "description": "AI proposes changes, waits for human approval before applying",
+      "enforcement": "strict"
+    },
+    {
+      "name": "Small Changes",
+      "description": "Max 200 LOC or ~20 minutes of work per step",
+      "enforcement": "strict"
+    },
+    {
+      "name": "Test Coverage",
+      "description": "All new functionality requires tests",
+      "enforcement": "required"
+    },
+    {
+      "name": "Config Protection",
+      "description": "Never modify config/job_wizard/*.yml without explicit approval",
+      "enforcement": "strict"
+    },
+    {
+      "name": "Truth Data",
+      "description": "No fabricated skills, experience, or credentials",
+      "enforcement": "strict"
+    },
+    {
+      "name": "Local Only",
+      "description": "Default to local development (SQLite, no production configs)",
+      "enforcement": "default"
+    },
+    {
+      "name": "Quality Gates",
+      "description": "RuboCop/ESLint must pass, security scans clean",
+      "enforcement": "required"
+    },
+    {
+      "name": "Diagnostic Mode",
+      "description": "Use ai_diagnose when stuck in bug loops",
+      "enforcement": "recommended"
+    }
+  ],
+  "workflow": {
+    "roles": ["PLANNER", "ENGINEER", "CRITIC"],
+    "sequence": [
+      "PLANNER creates plan with 3-5 clarifying questions",
+      "Human answers questions",
+      "ENGINEER implements ONE step",
+      "CRITIC reviews against checklist",
+      "Human approves/revises",
+      "Repeat until complete"
+    ]
+  },
+  "files": {
+    "protected": [
+      "config/job_wizard/profile.yml",
+      "config/job_wizard/experience.yml",
+      "config/job_wizard/rules.yml",
+      ".env*",
+      "config/database.yml",
+      "config/deploy.yml",
+      "config/master.key"
+    ],
+    "read_only_reference": [
+      "ai/_system/charter.md",
+      "ai/_system/constraints.md",
+      "ai/_system/review_checklist.md"
+    ]
+  },
+  "commands": {
+    "safe_to_suggest": [
+      "bundle exec rubocop -A",
+      "bundle exec rspec",
+      "rails db:migrate",
+      "scan_here",
+      "git status",
+      "git diff"
+    ],
+    "never_auto_run": [
+      "git push",
+      "rails db:migrate RAILS_ENV=production",
+      "bundle install",
+      "rails destroy",
+      "rails s",
+      "npm run dev"
+    ]
+  }
+}
+

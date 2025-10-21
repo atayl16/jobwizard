@@ -23,11 +23,11 @@ module JobWizard
       @filter = JobFilter.new(Rules.current.job_filters.merge(ranking_hash))
     end
 
-    # Calculates score for a job posting based on title and description
+    # Calculates score for a job posting based on title, description, and optionally location
     # Returns 0.0 if the job would be filtered out
-    def score(title:, description:)
+    def score(title:, description:, location: nil)
       # If filter would drop this job, return 0.0
-      return 0.0 unless @filter.keep?(title: title, description: description)
+      return 0.0 unless @filter.keep?(title: title, description: description, location: location)
 
       # Combine title and description for scoring
       text = normalize_text("#{title} #{description}")

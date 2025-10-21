@@ -147,6 +147,7 @@ job_filters_ruby:
     - "backend ruby"
     - "full stack ruby"
   exclude_keywords:
+    # Non-dev roles
     - accountant
     - accounting
     - finance
@@ -161,6 +162,29 @@ job_filters_ruby:
     - marketing
     - "customer support"
     - "customer success"
+    # Non-US location restrictions (Canada, UK, Europe, Asia, etc.)
+    - "canada only"
+    - "canada remote"
+    - "uk only"
+    - "uk remote"
+    - "europe only"
+    - "european union"
+    - "eu only"
+    - "india only"
+    - "india remote"
+    - "asia pacific"
+    - "apac only"
+    - "australia only"
+    - "new zealand only"
+    - "latin america"
+    - "south america"
+    # Specific countries (non-US)
+    - china
+    - japan
+    - singapore
+    - brazil
+    - mexico
+    - argentina
 
 # Scoring boosts and penalties for Ruby/Rails roles
 scoring_ruby:

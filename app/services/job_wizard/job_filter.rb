@@ -23,11 +23,11 @@ module JobWizard
                                end
     end
 
-    # Determines if a job posting should be kept based on title and description
+    # Determines if a job posting should be kept based on title, description, and optionally location
     # Returns true if the job passes all filters, false otherwise
-    def keep?(title:, description:)
-      # Combine title and description for matching
-      text = normalize_text("#{title} #{description}")
+    def keep?(title:, description:, location: nil)
+      # Combine title, description, and location for matching
+      text = normalize_text("#{title} #{description} #{location}")
 
       # Rule 1: Reject if ANY exclude keyword is present
       return false if matches_any_exclude?(text)

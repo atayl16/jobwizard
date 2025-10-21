@@ -32,12 +32,13 @@ module JobWizard
         jobs_data.filter_map do |job|
           title = job['title']
           description = extract_description(job)
+          location = job['location']&.[]('name')
           
-          # Skip jobs that don't pass the filter
-          next unless filter.keep?(title: title, description: description)
+          # Skip jobs that don't pass the filter (includes location check)
+          next unless filter.keep?(title: title, description: description, location: location)
           
-          # Calculate score for this job
-          computed_score = ranker.score(title: title, description: description)
+          # Calculate score for this job (including location)
+          computed_score = ranker.score(title: title, description: description, location: location)
           
           # Skip jobs with 0 score (below threshold)
           next if computed_score.zero?
