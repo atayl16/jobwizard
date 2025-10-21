@@ -1,0 +1,43 @@
+# RuboCop Configuration for AI Toolkit Rails Apps
+# Goals: Reduce new-project noise, exclude generated files, maintain code quality
+# This template is copied by ai_rails.rb with TargetRubyVersion dynamically set
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3  # Will be replaced by ai_rails.rb
+  SuggestExtensions: false
+  Exclude:
+    - 'db/**/*schema.rb'
+    - 'db/**/schema.rb'
+    - 'db/migrate/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'Gemfile'
+
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+
+# Readability: 120 chars is reasonable for modern displays
+Layout/LineLength:
+  Max: 120
+
+# Frozen string literals add overhead without much benefit in Rails 3+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Don't require class/module documentation for every file
+Style/Documentation:
+  Enabled: false
+
+# Allow longer blocks in specs and config
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'config/environments/*'
+    - 'config/routes.rb'
+
+# Don't enforce I18n for all user-facing text (app-dependent)
+Rails/I18nLocaleTexts:
+  Enabled: false

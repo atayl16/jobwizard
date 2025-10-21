@@ -1,0 +1,159 @@
+# JobWizard — Truth-only experience source
+# This is the single source of truth for resume/cover generation.
+# Never claim anything not represented here.
+
+positions:
+  - company: "Daily Kos"
+    title: "Software Engineer II"
+    location: "Remote"
+    dates: "Jan 2022 – Oct 2025"
+    description: "Full-stack development of high-traffic Rails + React donation and engagement platforms."
+    achievements:
+      - "Built and maintained Rails + React features powering donation and engagement for millions of users."
+      - "Redesigned donation-ask modules so non-technical staff could manage amounts/messaging via Active Admin."
+      - "Integrated ActBlue/PayPal flows with React components and instrumented A/B tests via Amplitude."
+      - "On-call rotations with DevOps: triaged incidents on AWS/Kubernetes using Datadog, Grafana, Sentry."
+      - "Practiced TDD with RSpec/Jest; created onboarding docs in Notion and Jira."
+      - "Used AI tools (Cursor, Claude, CodeRabbit) to prototype and improve PR quality."
+
+    skills:
+      - Ruby on Rails
+      - Ruby
+      - React
+      - JavaScript
+      - TypeScript
+      - HTML/CSS
+      - MySQL
+      - Redis
+      - Sidekiq
+      - AWS
+      - Kubernetes
+      - Datadog
+      - Grafana
+      - Sentry
+      - RSpec
+      - Jest
+      - GitHub Actions
+      - Active Admin
+      - ActBlue
+      - PayPal
+      - Amplitude
+
+  - company: "MyTime"
+    title: "Director of Operations"
+    location: "Remote"
+    dates: "Jul 2014 – Nov 2021"
+    description: "Led operations, QA, and internal tooling for a B2B SaaS platform."
+    achievements:
+      - "Developed internal Rails tools to automate QA account creation and demos (hours saved per use)."
+      - "Coordinated launches across 200+ retail locations; reduced churn via improved onboarding."
+      - "Led a team of QA analysts across web/iOS/Android; owned cross-functional coordination."
+    skills:
+      - Ruby on Rails
+      - Internal Tools
+      - QA Leadership
+      - B2B Operations
+      - Customer Success
+      - Team Management
+      - Automation
+
+projects:
+  - name: "Personal Portfolio"
+    description: "Developer portfolio showcasing selected projects and experience."
+    url: "https://atayl16.github.io/portfolio"
+    skills: [Web Development, GitHub Pages]
+
+# Unified skills list with proficiency and brief context.
+# Use these to render a skills section and to truth-filter JD matches.
+skills:
+  # Expert
+  - name: "Ruby on Rails"
+    level: "expert"
+    context: "Primary framework for 5+ years"
+  - name: "Ruby"
+    level: "expert"
+    context: "Core language for 5+ years"
+  - name: "React"
+    level: "expert"
+    context: "Complex flows & admin UIs"
+  - name: "JavaScript"
+    level: "expert"
+    context: "Client logic, React components, testing"
+  - name: "MySQL"
+    level: "expert"
+    context: "Production DB for high-traffic apps"
+  - name: "RSpec"
+    level: "expert"
+    context: "TDD & coverage"
+  - name: "Jest"
+    level: "expert"
+    context: "React unit tests"
+  - name: "HTML/CSS"
+    level: "expert"
+    context: "Responsive UI"
+
+  # Intermediate
+  - name: "TypeScript"
+    level: "intermediate"
+    context: "Type-safe React utilities"
+  - name: "Redis"
+    level: "intermediate"
+    context: "Caching & jobs"
+  - name: "Sidekiq"
+    level: "intermediate"
+    context: "Background jobs"
+  - name: "AWS"
+    level: "intermediate"
+    context: "S3/EC2; collaborated with DevOps"
+  - name: "Kubernetes"
+    level: "intermediate"
+    context: "Monitored pods; debugged deploys"
+  - name: "Datadog"
+    level: "intermediate"
+    context: "APM & performance"
+  - name: "Grafana"
+    level: "intermediate"
+    context: "Infra metrics/alerts"
+  - name: "GitHub Actions"
+    level: "intermediate"
+    context: "CI workflows"
+  - name: "Active Admin"
+    level: "intermediate"
+    context: "Content team interfaces"
+  - name: "Amplitude"
+    level: "intermediate"
+    context: "A/B testing & event tracking"
+  - name: "PagerDuty"
+    level: "intermediate"
+    context: "On-call rotations"
+
+  # Basic (used/familiar; not deep)
+  - name: "Terraform"
+    level: "basic"
+    context: "Read/edited; not primary author"
+  - name: "Memcached"
+    level: "basic"
+    context: "Distributed caching"
+  - name: "SQLite"
+    level: "basic"
+    context: "Local development"
+  - name: "Sentry"
+    level: "basic"
+    context: "Error tracking"
+  - name: "Ghost Inspector"
+    level: "basic"
+    context: "E2E browser tests"
+  - name: "PayPal"
+    level: "basic"
+    context: "Payment integration"
+  - name: "ActBlue"
+    level: "basic"
+    context: "Donation processing"
+
+# Skills you explicitly DO NOT claim (may be mentioned as exposure if JD requires, but not presented as core).
+not_claimed_skills:
+  - "Kubernetes cluster administration"
+  - "Docker image hardening"
+  - "Terraform module authoring at scale"
+  - "Advanced SRE/production on-call ownership"
+  - "Kafka"

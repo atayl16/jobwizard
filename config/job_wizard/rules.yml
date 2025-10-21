@@ -1,0 +1,198 @@
+# Rules for scanning job descriptions and flagging potential issues
+
+warnings:
+  us_only_role:
+    patterns:
+      - '\b(US|United States)\s+(citizen|citizenship)\b'
+      - '\bUS\s+citizen(s)?\s+only\b'
+      - '\bmust be (a\s+)?US citizen\b'
+      - '\beligible to work in (the\s+)?US\b'
+    message: "Requires US citizenship or work authorization"
+    note: "✓ You are a US citizen (remote digital nomad)"
+    severity: "low"
+
+  location_restricted:
+    patterns:
+      - '\bno\s+remote\b'
+      - '\bon-?site\s+only\b'
+      - '\bmust\s+be\s+located\s+in\b'
+      - '\bmust\s+reside\s+in\b'
+      - '\bin-?office\b'
+      - '\brelocate\s+to\b'
+    message: "May require a specific location or relocation"
+    note: "Verify if Houston mailing address/remote status is acceptable"
+    severity: "medium"
+
+  timezone_requirements:
+    patterns:
+      - '\b(P|M|C|E)ST\b.*\brequired\b'
+      - '\bEST\b.*\bhours\b'
+      - '\bspecific\s+time\s?zone\b'
+    message: "Specific timezone requirements mentioned"
+    note: "Confirm schedule flexibility"
+    severity: "low"
+
+  sponsorship_required:
+    patterns:
+      - '\b(no\s+visa\s+sponsorship)\b'
+      - '\b(visa\s+sponsorship\s+not\s+available)\b'
+      - '\b(sponsor(ship)?\s+required)\b'
+    message: "Mentions visa sponsorship constraints"
+    severity: "medium"
+
+  security_clearance:
+    patterns:
+      - '\b(active\s+)?(security\s+)?clearance\b'
+      - '\bPublic\s+Trust\b'
+      - '\bSecret\b|\bTop\s+Secret\b'
+    message: "Security clearance requirements"
+    severity: "medium"
+
+  contract_only:
+    patterns:
+      - '\b1099\b'
+      - '\bcontract\s+only\b'
+      - '\bC2C\b'
+    message: "Contract-only arrangement"
+    severity: "low"
+
+blocking:
+  unpaid:
+    patterns:
+      - '\bunpaid\b'
+      - '\bno\s+salary\b'
+      - '\bvolunteer\b'
+      - '\bno\s+compensation\b'
+    message: "Unpaid or volunteer position"
+    severity: "high"
+
+  commission_only:
+    patterns:
+      - '\bcommission\s+only\b'
+      - '\bno\s+base\s+salary\b'
+      - '\b100%\s+commission\b'
+    message: "Commission-only compensation"
+    severity: "high"
+
+  multi_level_marketing:
+    patterns:
+      - '\bMLM\b'
+      - '\bmulti-?level\s+marketing\b'
+      - '\bnetwork\s+marketing\b'
+    message: "Possible MLM/pyramid scheme"
+    severity: "high"
+
+  unrealistic_requirements:
+    patterns:
+      - '\b\d{2,}\+?\s+years?\s+experience\b'     # 10+ years
+      - '\bentry.?level\b.*\b\d+\s+years?\b'      # entry-level with years required
+    message: "Potentially unrealistic experience requirements"
+    severity: "medium"
+
+info:
+  equity_mentioned:
+    patterns:
+      - '\bequity\b'
+      - '\bstock\s+options\b'
+      - '\bESOP\b'
+    message: "Equity/stock options mentioned"
+    severity: "info"
+
+  benefits_mentioned:
+    patterns:
+      - '\bhealth\s+insurance\b'
+      - '\b401k\b'
+      - '\bunlimited\s+PTO\b'
+      - '\bflexible\s+schedule\b'
+    message: "Benefits mentioned"
+    severity: "info"
+
+  startup_indicators:
+    patterns:
+      - '\bstartup\b'
+      - '\bearly\s+stage\b'
+      - '\bfast.?paced\b'
+      - '\bwear\s+many\s+hats\b'
+    message: "Startup indicators"
+    severity: "info"
+
+# Skill verification rules
+skill_verification:
+  flag_unverified: true
+  message: "Job requires skills not listed in your experience.yml"
+  action: "mark_as_not_claimed"
+
+# NEW: cover letter guardrails (used by the writer to avoid boilerplate)
+cover_letter_rules:
+  forbid_phrases:
+    - "I am writing to express my interest"
+    - "I believe I am the perfect fit"
+  max_paragraphs: 3
+  require_specific_match_points: 2   # tie achievements to 2 JD points
+
+# NEW: generation preferences mirrored from profile/output
+generation_prefs:
+  prefer_path_style: "simple"  # "simple" or "deep"
+  make_symlink_latest: true
+
+# Ruby/Rails-focused job board filtering (fallback when primary keys not present)
+job_filters_ruby:
+  include_keywords:
+    - ruby
+    - rails
+    - "ruby on rails"
+    - ror
+    - "rails engineer"
+    - "ruby engineer"
+    - "backend ruby"
+    - "full stack ruby"
+  exclude_keywords:
+    - accountant
+    - accounting
+    - finance
+    - financial
+    - tax
+    - analyst
+    - "project manager"
+    - pm
+    - operations
+    - hr
+    - recruiting
+    - marketing
+    - "customer support"
+    - "customer success"
+
+# Scoring boosts and penalties for Ruby/Rails roles
+scoring_ruby:
+  boosts:
+    ruby: 5.0
+    rails: 5.0
+    "ruby on rails": 6.0
+    ror: 4.0
+    activerecord: 2.5
+    rspec: 2.5
+    sidekiq: 2.0
+    pundit: 1.5
+    devise: 1.5
+    hotwire: 2.0
+    turbo: 1.0
+  neutral_or_low:
+    react: 0.5
+    javascript: 0.5
+    typescript: 0.5
+  penalties:
+    accountant: -5.0
+    accounting: -5.0
+    finance: -4.0
+    "project manager": -4.0
+    analyst: -3.5
+    operations: -3.0
+
+# Ranking thresholds for job board
+ranking_ruby:
+  min_keep_score: 1.0
+  require_include_match: true
+
+# UI labels for active filter state
+ui_ruby:
+  active_filter_label: "Showing Ruby / Rails roles only"

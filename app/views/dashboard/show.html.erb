@@ -1,0 +1,101 @@
+<div class="min-h-screen bg-gray-50 dashboard-container">
+  <!-- Output Path Banner -->
+  <div class="bg-blue-600 text-white py-3 px-4 shadow-sm">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+        </svg>
+        <div>
+          <span class="text-sm font-medium">Output Folder:</span>
+          <code class="ml-2 text-sm bg-blue-700 px-2 py-0.5 rounded"><%= @output_root %></code>
+        </div>
+      </div>
+      <% if Rails.env.development? %>
+        <%= button_to 'Open Folder', files_reveal_path, params: { path: @output_root }, method: :post, class: 'text-sm bg-blue-700 hover:bg-blue-800 px-4 py-1.5 rounded-md font-medium transition-colors', form: { data: { turbo: false } } %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto py-8 px-4">
+    <!-- Flash Messages -->
+    <div id="flash-messages" class="mb-6">
+      <% if notice %>
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+          <p class="text-green-800"><%= notice %></p>
+        </div>
+      <% end %>
+      <% if alert %>
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+          <p class="text-red-800"><%= alert %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Top Section: Quick Apply -->
+    <div class="mb-8">
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <div class="flex items-center gap-2 mb-4">
+          <svg class="w-6 h-6 text-blue-600 dashboard-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <h2 class="text-xl font-bold text-gray-900">Quick Apply</h2>
+        </div>
+        <p class="text-sm text-gray-600 mb-4">Paste a job description below. We'll auto-extract the company and role for you.</p>
+        
+        <%= render 'quick_apply_form' %>
+      </div>
+    </div>
+
+    <!-- Middle Section: Two Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Suggested Jobs -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <div class="flex items-center gap-2 mb-4">
+          <svg class="w-6 h-6 text-purple-600 dashboard-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+          <h2 class="text-xl font-bold text-gray-900">Matching Jobs</h2>
+          <% if @job_postings.any? %>
+            <span class="ml-auto text-sm text-gray-500"><%= @job_postings.count %> jobs</span>
+          <% end %>
+        </div>
+        
+        <% if @matching_stats %>
+          <div class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div class="text-sm text-blue-800">
+              <span class="font-semibold">Filtered for you:</span> 
+              Remote-only positions matching your Ruby on Rails skills
+              <br>
+              <span class="text-xs text-blue-600">
+                Showing <%= @matching_stats[:matching_jobs] %> of <%= @matching_stats[:total_jobs] %> total jobs 
+                (<%= @matching_stats[:match_percentage] %>% match rate)
+              </span>
+            </div>
+          </div>
+        <% end %>
+        
+        <%= render 'suggested_jobs', job_postings: @job_postings %>
+      </div>
+
+      <!-- Recent Applications -->
+      <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <div class="flex items-center gap-2 mb-4">
+          <svg class="w-6 h-6 text-green-600 dashboard-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <h2 class="text-xl font-bold text-gray-900">Recent Applications</h2>
+          <% if @recent_apps.any? %>
+            <span class="ml-auto text-sm text-gray-500"><%= @recent_apps.count %> recent</span>
+          <% end %>
+        </div>
+        
+        <div id="recent-applications">
+          <%= render 'recent_applications', applications: @recent_apps %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

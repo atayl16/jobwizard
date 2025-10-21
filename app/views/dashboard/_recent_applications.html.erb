@@ -1,0 +1,70 @@
+<% if applications.any? %>
+  <div class="space-y-3 max-h-96 overflow-y-auto">
+    <% applications.each do |app| %>
+      <div class="border border-gray-200 rounded-lg p-3 hover:border-green-300 transition-colors">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div class="flex-1 min-w-0">
+            <h3 class="font-semibold text-gray-900 truncate"><%= app.company %></h3>
+            <p class="text-sm text-gray-600 truncate"><%= app.role %></p>
+            <p class="text-xs text-gray-500 mt-1"><%= time_ago_in_words(app.created_at) %> ago</p>
+          </div>
+          
+          <% if app.generated? %>
+            <span class="flex-shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+              ✓ Ready
+            </span>
+          <% elsif app.error? %>
+            <span class="flex-shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+              ✗ Error
+            </span>
+          <% else %>
+            <span class="flex-shrink-0 inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+              ⋯ Draft
+            </span>
+          <% end %>
+        </div>
+
+        <% if app.pdfs_ready? %>
+          <!-- Download Links -->
+          <div class="flex flex-wrap gap-2 mb-2">
+            <%= link_to resume_application_path(app), class: 'inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium' do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+              Resume
+            <% end %>
+            
+            <%= link_to cover_letter_application_path(app), class: 'inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium' do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              Cover Letter
+            <% end %>
+          </div>
+
+          <!-- Disk Path -->
+          <% if app.output_path.present? %>
+            <details class="text-xs">
+              <summary class="text-gray-500 hover:text-gray-700 cursor-pointer">Show disk path</summary>
+              <div class="mt-1 p-2 bg-gray-50 rounded border border-gray-200">
+                <code class="text-xs text-gray-700 break-all"><%= app.output_path %></code>
+                <% if Rails.env.development? %>
+                  <%= button_to 'Reveal', files_reveal_path, params: { path: app.output_path }, method: :post, class: 'mt-1 text-xs text-blue-600 hover:text-blue-800', form: { data: { turbo: false } } %>
+                <% end %>
+              </div>
+            </details>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-8 text-gray-500">
+    <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    </svg>
+    <p class="text-sm">No applications yet</p>
+    <p class="text-xs mt-1">Use Quick Apply above to generate your first application</p>
+  </div>
+<% end %>
+

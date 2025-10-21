@@ -1,0 +1,46 @@
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Job Board</h1>
+    <p class="text-gray-600">Curated job postings from selected companies. Click "Tailor & Export" to generate documents.</p>
+  </div>
+
+  <% if @jobs.any? %>
+    <div class="space-y-4">
+      <% @jobs.each do |job| %>
+        <div class="bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-500 transition-colors">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <h2 class="text-xl font-semibold text-gray-900">
+                  <%= link_to job.title, job, class: "hover:text-blue-600" %>
+                </h2>
+                <% if job.remote? %>
+                  <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">Remote</span>
+                <% end %>
+              </div>
+              <p class="text-gray-700 font-medium mb-1"><%= job.company %></p>
+              <p class="text-sm text-gray-600 mb-3">
+                <% if job.location.present? %>
+                  📍 <%= job.location %>
+                <% end %>
+                <% if job.posted_at %>
+                  • Posted <%= time_ago_in_words(job.posted_at) %> ago
+                <% end %>
+              </p>
+              <p class="text-gray-700 text-sm"><%= job.summary %></p>
+            </div>
+            <div class="ml-4">
+              <%= button_to "Tailor & Export", tailor_job_path(job), method: :post, class: "px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
+      <p class="text-gray-600 text-lg mb-2">No jobs found</p>
+      <p class="text-gray-500 text-sm">Run <code class="bg-white px-2 py-1 rounded">rake jobs:fetch</code> to import job postings.</p>
+    </div>
+  <% end %>
+</div>
+

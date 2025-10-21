@@ -1,0 +1,22 @@
+PreCommit:
+  RuboCop:
+    enabled: true
+    required_executable: 'rubocop'
+    command: ['bundle', 'exec', 'rubocop']
+  
+  RSpec:
+    enabled: false
+    description: 'Run RSpec tests'
+    command: ['bundle', 'exec', 'rspec']
+
+PrePush:
+  Brakeman:
+    enabled: true
+    required_executable: 'brakeman'
+    command: ['bundle', 'exec', 'brakeman', '-q']
+  
+  BundleAudit:
+    enabled: true
+    required_executable: 'bundler-audit'
+    command: ['bundle', 'exec', 'bundler-audit', 'check', '--update']
+

@@ -1,0 +1,65 @@
+job_filters:
+  include_keywords:
+    - ruby
+    - rails
+    - "ruby on rails"
+    - "ror"
+    - "rails engineer"
+    - "ruby engineer"
+    - "backend ruby"
+    - "full stack ruby"
+  exclude_keywords:
+    - accountant
+    - accounting
+    - finance
+    - financial
+    - tax
+    - analyst
+    - "project manager"
+    - pm
+    - operations
+    - hr
+    - recruiting
+    - marketing
+    - "customer support"
+    - "customer success"
+
+scoring:
+  # Strong boosts for Ruby/Rails terms
+  boosts:
+    ruby: 5.0
+    rails: 5.0
+    "ruby on rails": 6.0
+    "ror": 4.0
+    "activerecord": 2.5
+    "rspec": 2.5
+    "sidekiq": 2.0
+    "pundit": 1.5
+    "devise": 1.5
+    "hotwire": 2.0
+    "turbo": 1.0
+
+  # Mild or zero boosts for JS—keep present but not prioritized
+  neutral_or_low:
+    react: 0.5
+    javascript: 0.5
+    typescript: 0.5
+
+  # Penalties (push away non-dev)
+  penalties:
+    accountant: -5.0
+    accounting: -5.0
+    finance: -4.0
+    "project manager": -4.0
+    analyst: -3.5
+    operations: -3.0
+
+ranking:
+  # Minimum requirements for a job to be kept
+  min_keep_score: 1.0
+  # Require at least one include keyword in title OR description to keep
+  require_include_match: true
+
+ui:
+  # Dashboard banner to remind you what’s filtered
+  active_filter_label: "Showing Ruby / Rails roles only"

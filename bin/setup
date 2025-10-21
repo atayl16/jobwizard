@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+echo "== Installing dependencies =="
+bundle install
+
+echo "== Preparing database =="
+bin/rails db:prepare
+
+echo "== Creating directories =="
+mkdir -p reports docs
+
+echo "== Setup complete =="
+

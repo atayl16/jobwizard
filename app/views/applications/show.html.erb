@@ -1,0 +1,150 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900"><%= @application.company %> - <%= @application.role %></h1>
+      <p class="text-gray-600 mt-1">Application created <%= time_ago_in_words(@application.created_at) %> ago</p>
+    </div>
+    
+    <% if @application.generated? %>
+      <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+        ✓ Generated
+      </span>
+    <% elsif @application.error? %>
+      <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+        ✗ Error
+      </span>
+    <% else %>
+      <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+        ⋯ Draft
+      </span>
+    <% end %>
+  </div>
+
+  <!-- Flags Section -->
+  <% if @flags[:warnings].any? || @flags[:blocking].any? || @flags[:unverified_skills].any? %>
+    <div class="mb-6 space-y-3">
+      <!-- Blocking Flags -->
+      <% @flags[:blocking].each do |flag| %>
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+          <div class="flex items-start">
+            <span class="text-red-500 text-xl mr-3">🚫</span>
+            <div>
+              <p class="font-semibold text-red-800"><%= flag["message"] || flag[:message] %></p>
+              <% if flag["note"] || flag[:note] %>
+                <p class="text-sm text-red-700 mt-1"><%= flag["note"] || flag[:note] %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Warnings -->
+      <% @flags[:warnings].each do |flag| %>
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+          <div class="flex items-start">
+            <span class="text-yellow-500 text-xl mr-3">⚠️</span>
+            <div>
+              <p class="font-semibold text-yellow-800"><%= flag["message"] || flag[:message] %></p>
+              <% if flag["note"] || flag[:note] %>
+                <p class="text-sm text-yellow-700 mt-1"><%= flag["note"] || flag[:note] %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Unverified Skills -->
+      <% if @flags[:unverified_skills].any? %>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+          <div class="flex items-start">
+            <span class="text-blue-500 text-xl mr-3">ℹ️</span>
+            <div>
+              <p class="font-semibold text-blue-800">Unverified Skills Detected</p>
+              <p class="text-sm text-blue-700 mt-1">
+                The following skills were mentioned but are not in your verified experience:
+                <span class="font-mono font-semibold"><%= @flags[:unverified_skills].map { |s| s["skill"] || s[:skill] }.compact.join(', ') %></span>
+              </p>
+              <p class="text-xs text-blue-600 mt-2">These skills were NOT included in your generated resume.</p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Not Claimed Skills Section -->
+  <% if defined?(@not_claimed_skills) && @not_claimed_skills&.any? %>
+    <div class="mb-6">
+      <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
+        <div class="flex items-start">
+          <span class="text-purple-500 text-xl mr-3">📋</span>
+          <div>
+            <p class="font-semibold text-purple-800">Not Claimed Skills</p>
+            <p class="text-sm text-purple-700 mt-1">
+              These skills from the job description are not in your experience.yml:
+              <span class="font-mono font-semibold"><%= @not_claimed_skills.join(', ') %></span>
+            </p>
+            <p class="text-xs text-purple-600 mt-2">
+              Consider adding them to <code class="bg-purple-100 px-1 rounded">config/job_wizard/experience.yml</code> if you have experience with them.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Downloads Section -->
+  <% if @application.pdfs_ready? %>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">📄 Generated Documents</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <a href="<%= resume_application_path(@application) %>" class="flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+          <div class="flex items-center">
+            <span class="text-3xl mr-3">📝</span>
+            <div>
+              <p class="font-semibold text-gray-900">Resume</p>
+              <p class="text-sm text-gray-600">resume.pdf</p>
+            </div>
+          </div>
+          <span class="text-blue-600">Download →</span>
+        </a>
+
+        <a href="<%= cover_letter_application_path(@application) %>" class="flex items-center justify-between p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
+          <div class="flex items-center">
+            <span class="text-3xl mr-3">✉️</span>
+            <div>
+              <p class="font-semibold text-gray-900">Cover Letter</p>
+              <p class="text-sm text-gray-600">cover_letter.pdf</p>
+            </div>
+          </div>
+          <span class="text-blue-600">Download →</span>
+        </a>
+      </div>
+
+      <div class="bg-gray-50 rounded p-3">
+        <p class="text-sm text-gray-600 mb-1">📁 Files saved to:</p>
+        <code class="text-xs text-gray-800 bg-white px-2 py-1 rounded border border-gray-200 block"><%= @application.output_path %></code>
+        <div class="flex items-center gap-2 mt-2">
+          <p class="text-xs text-gray-500">Open this path in Finder to access your documents directly.</p>
+          <% if Rails.env.development? %>
+            <%= button_to 'Open in Finder', files_reveal_path, params: { path: @application.output_path }, method: :post, class: 'text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors', form: { data: { turbo: false } } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Job Description -->
+  <div class="bg-white border border-gray-200 rounded-lg p-6">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Job Description</h2>
+    <div class="prose prose-sm max-w-none">
+      <pre class="whitespace-pre-wrap font-sans text-sm text-gray-700 bg-gray-50 p-4 rounded"><%= @application.job_description %></pre>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <%= link_to "← Back to Applications", applications_path, class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+</div>
+

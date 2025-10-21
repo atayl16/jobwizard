@@ -1,0 +1,55 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="mb-6">
+    <%= link_to "← Back to Job Board", jobs_path, class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+    <div class="flex items-start justify-between mb-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @job.title %></h1>
+        <p class="text-xl text-gray-700 mb-2"><%= @job.company %></p>
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <% if @job.location.present? %>
+            <span>📍 <%= @job.location %></span>
+          <% end %>
+          <% if @job.remote? %>
+            <span class="px-2 py-1 bg-green-100 text-green-800 rounded font-medium">Remote</span>
+          <% end %>
+          <% if @job.posted_at %>
+            <span>Posted <%= time_ago_in_words(@job.posted_at) %> ago</span>
+          <% end %>
+        </div>
+      </div>
+      <%= button_to "Tailor & Export PDFs", tailor_job_path(@job), method: :post, class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+    </div>
+
+    <% if @scan_results[:warnings].any? || @scan_results[:blocking].any? %>
+      <div class="mb-4 space-y-2">
+        <% @scan_results[:blocking].each do |flag| %>
+          <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded text-sm">
+            <span class="text-red-500 mr-2">🚫</span>
+            <span class="font-semibold text-red-800"><%= flag[:message] %></span>
+          </div>
+        <% end %>
+
+        <% @scan_results[:warnings].each do |flag| %>
+          <div class="bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded text-sm">
+            <span class="text-yellow-500 mr-2">⚠️</span>
+            <span class="font-semibold text-yellow-800"><%= flag[:message] %></span>
+            <% if flag[:note] %>
+              <span class="text-yellow-700"> - <%= flag[:note] %></span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="max-w-none">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Job Description</h2>
+      <div class="prose prose-sm prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-ul:list-disc prose-ul:pl-5 prose-li:text-gray-700 prose-a:text-blue-600 prose-a:underline max-w-none bg-white p-6 rounded-lg border border-gray-200">
+        <%= simple_format(@job.description, {}, wrapper_tag: "div") %>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,79 @@
+# Personal profile for resume/cover generation — truth-only
+
+name: "Alisha Taylor"
+email: "inspirebyexample0@gmail.com"
+phone: ""  # optional
+location: "Remote (U.S. Citizen)"
+linkedin: "https://www.linkedin.com/in/alisha-t-098785180"
+github: "https://github.com/atayl16"
+website: "https://atayl16.github.io/portfolio"
+
+summary: |
+  Full-stack engineer with 5 years building and scaling production systems in Ruby on Rails and React.
+  Strong at debugging, testing, and delivering secure, high-impact features. Collaborative across product,
+  design, and DevOps. Calm on-call presence with strong documentation habits and curiosity.
+
+core_skills:
+  - Ruby on Rails
+  - React
+  - JavaScript
+  - TypeScript
+  - HTML/CSS
+  - MySQL
+  - Redis
+  - AWS
+  - Kubernetes
+  - RSpec
+  - Jest
+  - GitHub Actions
+  - Datadog
+  - Grafana
+
+soft_skills:
+  - Cross-functional Collaboration
+  - Technical Documentation
+  - On-Call/Production Support
+  - Remote Work
+  - Problem Solving
+  - Team Leadership
+
+education:
+  - degree: "Master's in Accounting"
+    institution: "Western Governors University"
+    year:
+    honors: "Completed additional coursework in IT and Teaching"
+
+certifications: []
+
+languages:
+  - name: "English"
+    level: "Native"
+
+# NEW: writing preferences to steer tone in cover letters
+writing_preferences:
+  tone: "warm, concise, confident, human"
+  avoid_phrases:
+    - "I am writing to express my interest"
+    - "I believe I am the perfect fit"
+  closing_signature: "Best regards,\nAlisha Taylor"
+  paragraph_rules:
+    - "2–3 short paragraphs max"
+    - "First paragraph: align impact in Rails/React to role"
+    - "Second paragraph: 1–2 concrete achievements tied to JD"
+    - "Close with availability and willingness to discuss"
+
+# NEW: resume layout preferences (consumed by your PDF builder)
+resume_preferences:
+  show_phone: false
+  show_location: true
+  section_order:
+    - "summary"
+    - "experience"
+    - "projects"
+    - "skills"
+  emphasize_levels: true  # use expert/intermediate/basic badges
+
+# NEW: filesystem UX preferences (mirrors env flags)
+output_preferences:
+  path_style: "simple" # "simple" or "deep"
+  include_symlink_latest: true
