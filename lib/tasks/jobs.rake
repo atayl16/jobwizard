@@ -131,6 +131,25 @@ namespace :jobs do
     puts '=' * 50
     puts "Total jobs fetched: #{total_fetched}"
     puts "PDFs queued for generation: #{total_generated}" if generate_pdfs
+    
+    # Clean up jobs that no longer match current criteria
+    puts "\n🧹 Cleaning up stale jobs..."
+    rules = JobWizard::Rules.current
+    filter = JobWizard::JobFilter.new(rules.job_filters)
+    ranker = JobWizard::JobRanker.new(rules.scoring, rules.ranking)
+    
+    removed_count = 0
+    JobPosting.find_each do |job|
+      keeps = filter.keep?(title: job.title, description: job.description, location: job.location)
+      score = ranker.score(title: job.title, description: job.description, location: job.location)
+      
+      unless keeps && score > 0
+        job.destroy
+        removed_count += 1
+      end
+    end
+    
+    puts "✓ Removed #{removed_count} job(s) that no longer match criteria" if removed_count > 0
     puts "\nVisit /jobs to view the job board"
   end
 
@@ -142,5 +161,61 @@ namespace :jobs do
 
     old_jobs.destroy_all
     puts "Removed #{count} old job posting(s)"
+  end
+
+  desc 'Re-evaluate all existing jobs against current filter/scoring rules'
+  task refilter: :environment do
+    puts 'Re-evaluating all jobs against current rules...'
+    puts '=' * 80
+
+    rules = JobWizard::Rules.current
+    filter = JobWizard::JobFilter.new(rules.job_filters)
+    ranker = JobWizard::JobRanker.new(rules.scoring, rules.ranking)
+
+    total_jobs = JobPosting.count
+    removed_count = 0
+    updated_count = 0
+
+    JobPosting.find_each do |job|
+      # Check if job still passes filter
+      keeps = filter.keep?(
+        title: job.title,
+        description: job.description,
+        location: job.location
+      )
+
+      if keeps
+        # Recalculate score
+        new_score = ranker.score(
+          title: job.title,
+          description: job.description,
+          location: job.location
+        )
+
+        if new_score.zero?
+          # Score is 0 (below threshold), remove it
+          puts "  ✗ Removing: #{job.title} (score below threshold)"
+          job.destroy
+          removed_count += 1
+        elsif (job.score - new_score).abs > 0.01
+          # Score changed, update it
+          old_score = job.score
+          job.update!(score: new_score)
+          puts "  ↻ Updated: #{job.title} (#{old_score.round(2)} → #{new_score.round(2)})"
+          updated_count += 1
+        end
+      else
+        # No longer passes filter, remove it
+        puts "  ✗ Removing: #{job.title} (#{job.location || 'no location'})"
+        job.destroy
+        removed_count += 1
+      end
+    end
+
+    puts '=' * 80
+    puts "Total jobs evaluated: #{total_jobs}"
+    puts "Removed (no longer match criteria): #{removed_count}"
+    puts "Updated (score changed): #{updated_count}"
+    puts "Kept unchanged: #{total_jobs - removed_count - updated_count}"
   end
 end
