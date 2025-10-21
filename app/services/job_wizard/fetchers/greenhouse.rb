@@ -24,16 +24,34 @@ module JobWizard
       private
 
       def normalize_jobs(jobs_data, slug)
-        jobs_data.map do |job|
+        # Initialize filter and ranker
+        rules = JobWizard::Rules.current
+        filter = JobWizard::JobFilter.new(rules.job_filters)
+        ranker = JobWizard::JobRanker.new(rules.scoring, rules.ranking)
+
+        jobs_data.filter_map do |job|
+          title = job['title']
+          description = extract_description(job)
+          
+          # Skip jobs that don't pass the filter
+          next unless filter.keep?(title: title, description: description)
+          
+          # Calculate score for this job
+          computed_score = ranker.score(title: title, description: description)
+          
+          # Skip jobs with 0 score (below threshold)
+          next if computed_score.zero?
+
           {
             company: job.dig('company_name') || slug.titleize,
-            title: job['title'],
-            description: extract_description(job),
+            title: title,
+            description: description,
             location: job['location']&.[]('name'),
             remote: job['location']&.[]('name')&.downcase&.include?('remote') || false,
             posted_at: parse_date(job['updated_at']),
             url: job['absolute_url'],
             source: 'greenhouse',
+            score: computed_score,
             metadata: {
               greenhouse_id: job['id'],
               departments: job['departments']&.map { |d| d['name'] }
