@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_21_181846) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_21_221516) do
   create_table "applications", force: :cascade do |t|
     t.integer "job_posting_id"
     t.string "company", null: false
@@ -39,6 +39,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_181846) do
     t.json "metadata", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "score", default: 0.0, null: false
     t.index ["company"], name: "index_job_postings_on_company"
     t.index ["posted_at"], name: "index_job_postings_on_posted_at"
     t.index ["remote"], name: "index_job_postings_on_remote"

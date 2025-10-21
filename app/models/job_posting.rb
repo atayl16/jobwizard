@@ -8,6 +8,7 @@ class JobPosting < ApplicationRecord
   # Scopes
   scope :remote, -> { where(remote: true) }
   scope :recent, -> { order(posted_at: :desc) }
+  scope :by_score, -> { order(score: :desc, updated_at: :desc) }
   scope :by_company, ->(company) { where(company: company) }
   scope :by_source, ->(source) { where(source: source) }
 
