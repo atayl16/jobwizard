@@ -91,12 +91,12 @@ RSpec.describe JobWizard::JobFilter do
     end
 
     context 'when require_include_match is false' do
-      let(:rules_hash) do
-        {
+      let(:filter) do
+        described_class.new({
           'include_keywords' => ['ruby', 'rails'],
           'exclude_keywords' => ['accountant'],
           'require_include_match' => false
-        }
+        })
       end
 
       it 'keeps jobs without include keywords if no exclude matches' do

@@ -16,10 +16,11 @@ module JobWizard
       @exclude_keywords = normalize_keywords(rules_hash['exclude_keywords'] || rules_hash[:exclude_keywords] || [])
       
       # Check ranking rules for require_include_match (may be passed in rules_hash or need to get from Rules.current.ranking)
-      @require_include_match = rules_hash['require_include_match'] || 
-                               rules_hash[:require_include_match] ||
-                               Rules.current.ranking['require_include_match'] ||
-                               true
+      @require_include_match = if rules_hash.key?('require_include_match') || rules_hash.key?(:require_include_match)
+                                 rules_hash['require_include_match'] || rules_hash[:require_include_match]
+                               else
+                                 Rules.current.ranking['require_include_match'] || true
+                               end
     end
 
     # Determines if a job posting should be kept based on title and description

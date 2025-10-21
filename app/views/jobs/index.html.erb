@@ -23,7 +23,7 @@
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-2">
                 <h2 class="text-xl font-semibold text-gray-900">
-                  <%= link_to job.title, job, class: "hover:text-blue-600" %>
+                  <%= link_to job.title, job_path(job), class: "hover:text-blue-600" %>
                 </h2>
                 <% if job.remote? %>
                   <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">Remote</span>
