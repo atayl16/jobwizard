@@ -21,7 +21,7 @@
         </div>
       </div>
       <div class="flex flex-col gap-3">
-        <%= link_to "Apply on Company Site →", @job.url, target: "_blank", rel: "noopener noreferrer", class: "px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors text-center" %>
+        <%= link_to "Apply on Company Site →", @job.url, target: "_blank", rel: "noopener noreferrer", class: "px-6 py-3 text-white font-semibold rounded-lg transition-colors text-center", style: "background-color: #16a34a;" %>
         <%= button_to "Tailor & Export PDFs", tailor_job_path(@job), method: :post, class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
       </div>
     </div>

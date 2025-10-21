@@ -41,7 +41,7 @@
               <p class="text-gray-700 text-sm"><%= job.summary %></p>
             </div>
             <div class="ml-4 flex flex-col gap-2">
-              <%= link_to "Apply →", job.url, target: "_blank", rel: "noopener noreferrer", class: "px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors whitespace-nowrap text-center" %>
+              <%= link_to "Apply →", job.url, target: "_blank", rel: "noopener noreferrer", class: "px-4 py-2 text-white font-semibold rounded-lg transition-colors whitespace-nowrap text-center", style: "background-color: #16a34a;" %>
               <%= button_to "Tailor & Export", tailor_job_path(job), method: :post, class: "px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap" %>
             </div>
           </div>
