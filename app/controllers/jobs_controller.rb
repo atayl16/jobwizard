@@ -5,10 +5,13 @@ class JobsController < ApplicationController
 
   # GET /jobs
   def index
-    @jobs = JobPosting.recent
+    @jobs = JobPosting.by_score # Sort by score DESC, then updated_at DESC
     @jobs = @jobs.remote if params[:remote] == 'true'
     @jobs = @jobs.by_company(params[:company]) if params[:company].present?
     @jobs = @jobs.page(params[:page]).per(20) if defined?(Kaminari)
+    
+    # Load rules for UI banner
+    @rules = JobWizard::Rules.current
   end
 
   # GET /jobs/:id
