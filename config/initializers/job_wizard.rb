@@ -16,7 +16,5 @@ module JobWizard
 end
 
 # Initialize Rails configuration namespace for JobWizard
-unless Rails.application.config.job_wizard
-  Rails.application.config.job_wizard = ActiveSupport::OrderedOptions.new
-  Rails.application.config.job_wizard.ai_enabled = ENV['OPENAI_API_KEY'].present?
-end
+Rails.application.config.job_wizard = ActiveSupport::OrderedOptions.new
+Rails.application.config.job_wizard.ai_enabled = ENV['OPENAI_API_KEY'].present?
