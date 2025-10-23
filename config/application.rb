@@ -23,5 +23,18 @@ module JobWizard
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # ActiveJob configuration
+    # Default to :async for local-only development
+    # Can be overridden with JOB_WIZARD_QUEUE_ADAPTER env var
+    queue_adapter = ENV.fetch('JOB_WIZARD_QUEUE_ADAPTER', 'async').downcase
+    
+    if queue_adapter == 'sidekiq' && defined?(Sidekiq)
+      config.active_job.queue_adapter = :sidekiq
+      Rails.logger.info "Using Sidekiq for ActiveJob"
+    else
+      config.active_job.queue_adapter = :async
+      Rails.logger.info "Using async adapter for ActiveJob"
+    end
   end
 end

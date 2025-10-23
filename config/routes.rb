@@ -71,4 +71,10 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # Optional: Sidekiq web UI (dev only, requires Redis + Sidekiq gem)
+  if Rails.env.development? && defined?(Sidekiq)
+    require 'sidekiq/web'
+    mount Sidekiq::Web => '/sidekiq'
+  end
 end

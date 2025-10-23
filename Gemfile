@@ -59,6 +59,10 @@ gem "kaminari"
 # Optional: Rufus scheduler for dev-only background jobs
 gem "rufus-scheduler", group: :development
 
+# Optional: Sidekiq for production background jobs (requires Redis)
+# gem "sidekiq", "~> 7.0"
+# gem "sidekiq-cron", "~> 1.0"  # Optional: for scheduled jobs
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
