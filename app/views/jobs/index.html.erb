@@ -131,6 +131,16 @@
                 <% if job.source.present? %>
                   <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium"><%= job.source.titleize %></span>
                 <% end %>
+                <% if job.status != 'suggested' %>
+                  <span class="px-2 py-1 rounded text-xs font-medium <%= case job.status 
+                    when 'applied' then 'bg-green-100 text-green-800'
+                    when 'rejected' then 'bg-red-100 text-red-800'
+                    when 'ignored' then 'bg-gray-100 text-gray-800'
+                    when 'exported' then 'bg-purple-100 text-purple-800'
+                    end %>">
+                    <%= job.status.titleize %>
+                  </span>
+                <% end %>
               </div>
               <p class="text-gray-700 font-medium mb-1"><%= job.company %></p>
               <p class="text-sm text-gray-600 mb-3">
@@ -161,9 +171,10 @@
                 <%= button_to "Tailor & Export", tailor_job_path(job), method: :post, class: "px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap" %>
               <% end %>
               
-              <div class="flex gap-1">
-                <%= button_to "Applied", applied_job_path(job), method: :patch, class: "px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors" %>
-                <%= button_to "Ignore", ignore_job_path(job), method: :patch, class: "px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors" %>
+              <div class="flex gap-1 flex-wrap">
+                <%= button_to "Applied", applied_job_path(job), method: :patch, class: "px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors", title: "Mark as applied (a)" %>
+                <%= button_to "Reject", rejected_job_path(job), method: :patch, class: "px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors", title: "Reject this job (r)" %>
+                <%= button_to "Ignore", ignore_job_path(job), method: :patch, class: "px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors", title: "Ignore this job (i)" %>
                 <%= button_to "Block", filters_block_company_path, method: :post, params: { company_name: job.company }, class: "px-3 py-1 bg-red-800 text-white text-sm rounded hover:bg-red-900 transition-colors", confirm: "Block all jobs from #{job.company}?" %>
               </div>
             </div>

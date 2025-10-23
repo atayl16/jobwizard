@@ -18,11 +18,34 @@
           <% if @job.posted_at %>
             <span>Posted <%= time_ago_in_words(@job.posted_at) %> ago</span>
           <% end %>
+          <% if @job.status != 'suggested' %>
+            <span class="px-2 py-1 rounded font-medium <%= case @job.status 
+              when 'applied' then 'bg-green-100 text-green-800'
+              when 'rejected' then 'bg-red-100 text-red-800'
+              when 'ignored' then 'bg-gray-100 text-gray-800'
+              when 'exported' then 'bg-purple-100 text-purple-800'
+              end %>">
+              <%= @job.status.titleize %>
+            </span>
+          <% end %>
         </div>
       </div>
       <div class="flex flex-col gap-3">
         <%= link_to "Apply on Company Site →", @job.url, target: "_blank", rel: "noopener noreferrer", class: "px-6 py-3 text-white font-semibold rounded-lg transition-colors text-center", style: "background-color: #16a34a;" %>
-        <%= button_to "Tailor & Export PDFs", tailor_job_path(@job), method: :post, class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+        
+        <% if @job.generated_today? %>
+          <div class="px-6 py-3 bg-green-100 text-green-800 font-semibold rounded-lg text-center">
+            ✓ Generated <%= time_ago_in_words(@job.exported_at) %> ago
+          </div>
+        <% else %>
+          <%= button_to "Tailor & Export PDFs", tailor_job_path(@job), method: :post, class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+        <% end %>
+        
+        <div class="flex gap-2 mt-2">
+          <%= button_to "Applied", applied_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors" %>
+          <%= button_to "Reject", rejected_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors" %>
+          <%= button_to "Ignore", ignore_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors" %>
+        </div>
       </div>
     </div>
 
@@ -163,5 +186,24 @@
       <% end %>
     </div>
   </div>
+
+  <!-- Notes Section -->
+  <% if @job.notes.present? || @job.rejected_reason.present? %>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 mt-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Notes</h2>
+      <% if @job.rejected_reason.present? %>
+        <div class="mb-3">
+          <strong class="text-red-700">Rejection Reason:</strong>
+          <p class="text-gray-700"><%= @job.rejected_reason %></p>
+        </div>
+      <% end %>
+      <% if @job.notes.present? %>
+        <div class="mb-3">
+          <strong class="text-gray-700">Notes:</strong>
+          <p class="text-gray-700"><%= @job.notes %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>
 
