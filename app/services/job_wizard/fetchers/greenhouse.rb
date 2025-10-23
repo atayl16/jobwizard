@@ -13,20 +13,20 @@ module JobWizard
 
       def fetch(slug)
         url = "https://boards-api.greenhouse.io/v1/boards/#{slug}/jobs?content=true"
-        Rails.logger.debug "[Greenhouse] Fetching from: #{url}"
-        
+        Rails.logger.debug { "[Greenhouse] Fetching from: #{url}" }
+
         response = self.class.get("/#{slug}/jobs", query: { content: 'true' })
-        
+
         unless response.success?
           Rails.logger.warn "[Greenhouse] HTTP #{response.code} for #{slug}"
           return []
         end
 
         jobs_data = response.parsed_response['jobs'] || []
-        Rails.logger.debug "[Greenhouse] Parsed #{jobs_data.length} jobs from #{slug} (before filtering)"
-        
+        Rails.logger.debug { "[Greenhouse] Parsed #{jobs_data.length} jobs from #{slug} (before filtering)" }
+
         normalized = normalize_jobs(jobs_data, slug)
-        Rails.logger.debug "[Greenhouse] Returning #{normalized.length} jobs from #{slug} (after filtering)"
+        Rails.logger.debug { "[Greenhouse] Returning #{normalized.length} jobs from #{slug} (after filtering)" }
         normalized
       rescue StandardError => e
         Rails.logger.error("[Greenhouse] Fetch error for #{slug}: #{e.message}")

@@ -5,24 +5,24 @@ namespace :jobs do
   task debug_sample: :environment do
     puts '🔍 Fetching sample jobs from each provider (no DB writes)...'
     puts '=' * 80
-    
+
     providers = {
       'greenhouse' => { fetcher: JobWizard::Fetchers::Greenhouse.new, slug: 'gitlab' },
       'lever' => { fetcher: JobWizard::Fetchers::Lever.new, slug: 'Netflix' },
       'remoteok' => { fetcher: JobWizard::Fetchers::RemoteOk.new, slug: nil },
       'remotive' => { fetcher: JobWizard::Fetchers::Remotive.new, slug: nil }
     }
-    
+
     providers.each do |name, config|
       puts "\n📦 #{name.upcase}"
       puts '-' * 80
-      
+
       begin
         jobs = config[:fetcher].fetch(config[:slug])
         sample = jobs.take(3)
-        
+
         if sample.empty?
-          puts "  ⚠️  No jobs returned (may be filtered out or API error)"
+          puts '  ⚠️  No jobs returned (may be filtered out or API error)'
         else
           sample.each_with_index do |job, i|
             puts "\n  Job ##{i + 1}:"
@@ -44,18 +44,18 @@ namespace :jobs do
         puts "    #{e.backtrace.first(2).join("\n    ")}"
       end
     end
-    
-    puts "\n" + '=' * 80
-    puts "✅ Debug sample complete. No database writes performed."
+
+    puts "\n#{'=' * 80}"
+    puts '✅ Debug sample complete. No database writes performed.'
   end
 
   desc 'Fetch jobs from all active sources in sources.yml'
   task fetch_all: :environment do
     puts '🔍 Fetching from all active sources...'
     puts ''
-    
+
     results = JobWizard::JobFetchService.fetch_all
-    
+
     if results[:total].zero?
       puts '⚠️  No jobs fetched'
       puts '   Check sources.yml or try enabling more sources'
@@ -70,7 +70,7 @@ namespace :jobs do
       results[:by_provider].each do |provider, count|
         puts "  #{provider.titleize}: #{count}"
       end
-      
+
       if results[:by_source].any?
         puts ''
         puts 'By source:'
@@ -79,7 +79,7 @@ namespace :jobs do
         end
       end
     end
-    
+
     if results[:errors].any?
       puts ''
       puts '⚠️  Errors:'
@@ -87,7 +87,7 @@ namespace :jobs do
         puts "  #{error}"
       end
     end
-    
+
     puts ''
     puts '📊 Current database counts:'
     JobPosting.group(:source).count.each do |source, count|

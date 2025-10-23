@@ -25,7 +25,7 @@ class JobsController < ApplicationController
 
     # Load rules for UI banner
     @rules = JobWizard::Rules.current
-    
+
     # Get source counts for the current filtered query
     @source_counts = @jobs.group(:source).count
   end

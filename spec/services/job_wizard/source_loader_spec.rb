@@ -13,7 +13,7 @@ RSpec.describe JobWizard::SourceLoader do
     it 'returns empty array if file not found' do
       allow(File).to receive(:exist?).and_return(false)
       allow(YAML).to receive(:load_file).and_raise(Errno::ENOENT)
-      
+
       expect(described_class.load_sources).to eq([])
     end
   end
@@ -36,4 +36,3 @@ RSpec.describe JobWizard::SourceLoader do
     end
   end
 end
-

@@ -12,11 +12,11 @@ module JobWizard
       base_uri 'https://remotive.com/api/remote-jobs'
 
       def fetch(_slug = nil)
-        url = "https://remotive.com/api/remote-jobs?category=software-dev"
-        Rails.logger.debug "[Remotive] Fetching from: #{url}"
-        
+        url = 'https://remotive.com/api/remote-jobs?category=software-dev'
+        Rails.logger.debug { "[Remotive] Fetching from: #{url}" }
+
         response = self.class.get('', query: { category: 'software-dev' })
-        
+
         unless response.success?
           Rails.logger.warn "[Remotive] HTTP #{response.code}"
           return []
@@ -24,11 +24,11 @@ module JobWizard
 
         parsed = response.parsed_response || {}
         jobs_data = parsed['jobs'] || []
-        
-        Rails.logger.debug "[Remotive] Parsed #{jobs_data.length} jobs (before filtering)"
-        
+
+        Rails.logger.debug { "[Remotive] Parsed #{jobs_data.length} jobs (before filtering)" }
+
         normalized = normalize_jobs(jobs_data)
-        Rails.logger.debug "[Remotive] Returning #{normalized.length} jobs (after filtering)"
+        Rails.logger.debug { "[Remotive] Returning #{normalized.length} jobs (after filtering)" }
         normalized
       rescue StandardError => e
         Rails.logger.error("[Remotive] Fetch error: #{e.message}")
@@ -111,4 +111,3 @@ module JobWizard
     end
   end
 end
-

@@ -12,7 +12,8 @@ module JobWizard
 
       if sources.empty?
         Rails.logger.warn 'No active job sources found in sources.yml'
-        return { total: 0, added: 0, updated: 0, skipped_by_status: 0, skipped_by_blocklist: 0, duplicates: 0, by_provider: {}, by_source: {}, errors: [] }
+        return { total: 0, added: 0, updated: 0, skipped_by_status: 0, skipped_by_blocklist: 0, duplicates: 0,
+                 by_provider: {}, by_source: {}, errors: [] }
       end
 
       results = {
@@ -110,19 +111,17 @@ module JobWizard
             metadata: job_data[:metadata] || job.metadata
           )
           skipped_count += 1
-        else
+        elsif job.persisted? && job.last_seen_at && job.last_seen_at > 1.hour.ago
           # Existing job in suggested status: update data
           # Check if this is truly an update or just a duplicate fetch
-          if job.persisted? && job.last_seen_at && job.last_seen_at > 1.hour.ago
-            duplicate_count += 1
-          else
-            job.assign_attributes(job_data.merge(
-                                    external_id: external_id,
-                                    last_seen_at: Time.current
-                                  ))
-            job.save!
-            updated_count += 1
-          end
+          duplicate_count += 1
+        else
+          job.assign_attributes(job_data.merge(
+                                  external_id: external_id,
+                                  last_seen_at: Time.current
+                                ))
+          job.save!
+          updated_count += 1
         end
       end
 

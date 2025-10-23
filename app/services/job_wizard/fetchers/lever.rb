@@ -13,10 +13,10 @@ module JobWizard
 
       def fetch(slug)
         url = "https://api.lever.co/v0/postings/#{slug}?mode=json"
-        Rails.logger.debug "[Lever] Fetching from: #{url}"
-        
+        Rails.logger.debug { "[Lever] Fetching from: #{url}" }
+
         response = self.class.get("/#{slug}", query: { mode: 'json' })
-        
+
         unless response.success?
           Rails.logger.warn "[Lever] HTTP #{response.code} for #{slug}"
           return []
@@ -24,10 +24,10 @@ module JobWizard
 
         jobs_data = response.parsed_response || []
         jobs_data = [jobs_data] unless jobs_data.is_a?(Array)
-        Rails.logger.debug "[Lever] Parsed #{jobs_data.length} jobs from #{slug} (before filtering)"
-        
+        Rails.logger.debug { "[Lever] Parsed #{jobs_data.length} jobs from #{slug} (before filtering)" }
+
         normalized = normalize_jobs(jobs_data, slug)
-        Rails.logger.debug "[Lever] Returning #{normalized.length} jobs from #{slug} (after filtering)"
+        Rails.logger.debug { "[Lever] Returning #{normalized.length} jobs from #{slug} (after filtering)" }
         normalized
       rescue StandardError => e
         Rails.logger.error("[Lever] Fetch error for #{slug}: #{e.message}")

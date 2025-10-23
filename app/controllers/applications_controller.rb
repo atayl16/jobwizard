@@ -6,7 +6,7 @@ class ApplicationsController < ApplicationController
   # GET /applications
   def index
     @applications = Application.order(created_at: :desc)
-    
+
     # Search
     if params[:q].present?
       query = params[:q]
@@ -15,20 +15,14 @@ class ApplicationsController < ApplicationController
         "%#{query}%", "%#{query}%"
       )
     end
-    
+
     # Filter by status
-    if params[:status].present?
-      @applications = @applications.where(status: params[:status])
-    end
-    
+    @applications = @applications.where(status: params[:status]) if params[:status].present?
+
     # Filter by date range
-    if params[:date_from].present?
-      @applications = @applications.where('created_at >= ?', params[:date_from])
-    end
-    if params[:date_to].present?
-      @applications = @applications.where('created_at <= ?', params[:date_to])
-    end
-    
+    @applications = @applications.where(created_at: (params[:date_from])..) if params[:date_from].present?
+    @applications = @applications.where(created_at: ..(params[:date_to])) if params[:date_to].present?
+
     # Pagination (25 per page)
     @applications = @applications.page(params[:page]).per(25)
   end

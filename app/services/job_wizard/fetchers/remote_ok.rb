@@ -12,11 +12,11 @@ module JobWizard
       base_uri 'https://remoteok.com/api'
 
       def fetch(_slug = nil)
-        url = "https://remoteok.com/api"
-        Rails.logger.debug "[RemoteOK] Fetching from: #{url}"
-        
+        url = 'https://remoteok.com/api'
+        Rails.logger.debug { "[RemoteOK] Fetching from: #{url}" }
+
         response = self.class.get('/', headers: { 'User-Agent' => 'JobWizard/1.0' })
-        
+
         unless response.success?
           Rails.logger.warn "[RemoteOK] HTTP #{response.code}"
           return []
@@ -25,11 +25,11 @@ module JobWizard
         jobs_data = response.parsed_response || []
         # RemoteOK returns array with first element being metadata, skip it
         jobs_data = jobs_data.drop(1) if jobs_data.first.is_a?(Hash) && jobs_data.first['legal']
-        
-        Rails.logger.debug "[RemoteOK] Parsed #{jobs_data.length} jobs (before filtering)"
-        
+
+        Rails.logger.debug { "[RemoteOK] Parsed #{jobs_data.length} jobs (before filtering)" }
+
         normalized = normalize_jobs(jobs_data)
-        Rails.logger.debug "[RemoteOK] Returning #{normalized.length} jobs (after filtering)"
+        Rails.logger.debug { "[RemoteOK] Returning #{normalized.length} jobs (after filtering)" }
         normalized
       rescue StandardError => e
         Rails.logger.error("[RemoteOK] Fetch error: #{e.message}")
@@ -49,7 +49,9 @@ module JobWizard
         jobs_data.filter_map do |job|
           # Filter to software/dev roles
           tags = job['tags'] || []
-          next unless tags.any? { |tag| tag.match?(/dev|engineer|software|programmer|backend|frontend|fullstack|rails|ruby/i) }
+          next unless tags.any? do |tag|
+            tag.match?(/dev|engineer|software|programmer|backend|frontend|fullstack|rails|ruby/i)
+          end
 
           title = job['position']
           company = job['company']
@@ -121,4 +123,3 @@ module JobWizard
     end
   end
 end
-
