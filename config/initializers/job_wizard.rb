@@ -14,3 +14,9 @@ module JobWizard
   # Temporary output path for Rails to serve downloads via send_file
   TMP_OUTPUT_ROOT = Rails.root.join('tmp/outputs')
 end
+
+# Initialize Rails configuration namespace for JobWizard
+unless Rails.application.config.job_wizard
+  Rails.application.config.job_wizard = ActiveSupport::OrderedOptions.new
+  Rails.application.config.job_wizard.ai_enabled = ENV['OPENAI_API_KEY'].present?
+end
