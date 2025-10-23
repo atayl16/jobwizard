@@ -53,6 +53,7 @@ module JobWizard
             company: job['company_name'] || slug.titleize,
             title: title,
             description: description,
+            location: location,
             source: 'greenhouse'
           )
 

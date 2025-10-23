@@ -19,13 +19,12 @@ module JobWizard
         reasons << 'Requires security clearance'
       end
 
-      # 4) Required keywords check (unless manually added)
-      unless manually_added?(job_posting) || has_required_keywords?(job_posting.title, job_posting.description)
-        reasons << 'Missing required keywords (Ruby/Rails)'
-      end
+      # 4) Required keywords check removed - now handled by JobFilter with require_include_match: false
 
-      # 5) Excluded keywords check
-      reasons << 'Contains excluded keywords' if has_excluded_keywords?(job_posting.title, job_posting.description)
+      # 5) Excluded keywords check - check title, description, AND location
+      text = "#{job_posting.title} #{job_posting.description}".downcase
+      text += " #{job_posting.location}" if job_posting.respond_to?(:location) && job_posting.location
+      reasons << 'Contains excluded keywords' if has_excluded_keywords?(text)
 
       rejected = reasons.any?
       log_rejection(job_posting, reasons) if rejected
