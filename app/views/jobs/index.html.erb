@@ -14,9 +14,57 @@
     </div>
   </div>
 
+  <!-- Status Tabs -->
+  <div class="mb-6 border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8">
+      <%= link_to jobs_path(status: 'suggested'), class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == 'suggested' || params[:status].blank? ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
+        Active
+        <% if @status_counts[:suggested] > 0 %>
+          <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-medium bg-blue-100 text-blue-800"><%= @status_counts[:suggested] %></span>
+        <% end %>
+      <% end %>
+      
+      <%= link_to jobs_path(status: 'applied'), class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == 'applied' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
+        Applied
+        <% if @status_counts[:applied] > 0 %>
+          <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-medium bg-green-100 text-green-800"><%= @status_counts[:applied] %></span>
+        <% end %>
+      <% end %>
+      
+      <%= link_to jobs_path(status: 'rejected'), class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == 'rejected' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
+        Rejected
+        <% if @status_counts[:rejected] > 0 %>
+          <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-medium bg-red-100 text-red-800"><%= @status_counts[:rejected] %></span>
+        <% end %>
+      <% end %>
+      
+      <%= link_to jobs_path(status: 'ignored'), class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == 'ignored' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
+        Ignored
+        <% if @status_counts[:ignored] > 0 %>
+          <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-medium bg-gray-100 text-gray-800"><%= @status_counts[:ignored] %></span>
+        <% end %>
+      <% end %>
+      
+      <%= link_to jobs_path(status: 'exported'), class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == 'exported' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
+        Exported
+        <% if @status_counts[:exported] > 0 %>
+          <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-medium bg-purple-100 text-purple-800"><%= @status_counts[:exported] %></span>
+        <% end %>
+      <% end %>
+      
+      <%= link_to jobs_path(status: 'all'), class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == 'all' ? 'border-gray-500 text-gray-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" do %>
+        All
+        <% if @status_counts[:all] > 0 %>
+          <span class="ml-2 py-0.5 px-2 rounded-full text-xs font-medium bg-gray-100 text-gray-800"><%= @status_counts[:all] %></span>
+        <% end %>
+      <% end %>
+    </nav>
+  </div>
+
   <!-- Search and Filters -->
   <div class="mb-6 bg-white border border-gray-200 rounded-lg p-4">
     <%= form_with url: jobs_path, method: :get, local: true, class: "space-y-4" do |form| %>
+      <%= hidden_field_tag :status, params[:status] if params[:status].present? %>
       <div class="flex gap-4 items-end">
         <div class="flex-1">
           <%= form.label :q, "Search", class: "block text-sm font-medium text-gray-700 mb-1" %>

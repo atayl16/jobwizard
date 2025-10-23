@@ -12,14 +12,33 @@ class JobsController < ApplicationController
 
   # GET /jobs
   def index
-    @jobs = JobPosting.board_visible.by_score # Use board_visible scope for defense in depth
+    # Start with all jobs (or specific status)
+    status = params[:status] || 'suggested'
+    @jobs = JobPosting.unsnoozed
+    
+    # Apply status filter
+    case status
+    when 'all'
+      # Show all jobs
+    when 'suggested'
+      @jobs = @jobs.suggested_only
+    when 'applied'
+      @jobs = @jobs.applied
+    when 'rejected'
+      @jobs = @jobs.rejected
+    when 'ignored'
+      @jobs = @jobs.ignored
+    when 'exported'
+      @jobs = @jobs.exported
+    end
 
-    # Apply filters
+    # Apply additional filters
     @jobs = @jobs.search(params[:q]) if params[:q].present?
     @jobs = @jobs.posted_since(params[:days]) if params[:days].present?
     @jobs = @jobs.min_score(params[:min_score]) if params[:min_score].present?
     @jobs = @jobs.remote if params[:remote] == 'true'
     @jobs = @jobs.by_company(params[:company]) if params[:company].present?
+    @jobs = @jobs.by_score
     @jobs = @jobs.page(params[:page]).per(20) if defined?(Kaminari)
 
     # Load rules for UI banner
@@ -30,6 +49,17 @@ class JobsController < ApplicationController
     
     # Get last fetch time
     @last_fetch = Rails.cache.read('job_fetch_last_run')
+    
+    # For status tabs
+    @current_status = status
+    @status_counts = {
+      all: JobPosting.unsnoozed.count,
+      suggested: JobPosting.unsnoozed.suggested_only.count,
+      applied: JobPosting.unsnoozed.applied.count,
+      rejected: JobPosting.unsnoozed.rejected.count,
+      ignored: JobPosting.unsnoozed.ignored.count,
+      exported: JobPosting.unsnoozed.exported.count
+    }
   end
 
   # GET /jobs/:id
