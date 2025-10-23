@@ -257,6 +257,8 @@ class ApplicationsController < ApplicationController
 
   def set_application
     @application = Application.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to applications_path, alert: 'Application not found'
   end
 
   def application_params

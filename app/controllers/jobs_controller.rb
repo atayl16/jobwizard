@@ -3,8 +3,6 @@
 class JobsController < ApplicationController
   before_action :set_job, only: %i[show tailor applied exported ignore]
 
-  rescue_from ActiveRecord::RecordNotFound, with: :job_not_found
-
   # POST /jobs/fetch
   def fetch
     FetchJobsJob.perform_later
@@ -42,6 +40,12 @@ class JobsController < ApplicationController
 
   # POST /jobs/:id/tailor
   def tailor
+    # Check if PDFs were already generated recently
+    if @job.generated_today?
+      redirect_to jobs_path, notice: 'PDFs were already generated today. Check your recent applications.'
+      return
+    end
+
     # Create an application for this job
     scanner = JobWizard::RulesScanner.new
     scan_results = scanner.scan(@job.description)
@@ -76,7 +80,9 @@ class JobsController < ApplicationController
         end
       end
     rescue StandardError => e
-      redirect_to root_path, alert: "Error: #{e.message}"
+      Rails.logger.error "PDF generation failed: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      redirect_to jobs_path, alert: "Error generating PDFs: #{e.message}"
     end
   end
 
@@ -112,9 +118,7 @@ class JobsController < ApplicationController
 
   def set_job
     @job = JobPosting.find(params[:id])
-  end
-
-  def job_not_found
+  rescue ActiveRecord::RecordNotFound
     redirect_to jobs_path, alert: 'Job posting not found or has been removed'
   end
 end
