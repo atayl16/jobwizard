@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_23_203703) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_23_205851) do
   create_table "ai_usages", force: :cascade do |t|
     t.string "model", null: false
     t.string "feature", null: false
@@ -72,6 +72,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_203703) do
     t.datetime "last_seen_at"
     t.datetime "ignored_at"
     t.datetime "last_fetch_at"
+    t.datetime "rejected_at"
+    t.string "rejected_reason"
+    t.text "notes"
+    t.datetime "snooze_until"
     t.index ["company"], name: "index_job_postings_on_company"
     t.index ["created_at"], name: "index_job_postings_on_created_at"
     t.index ["last_seen_at"], name: "index_job_postings_on_last_seen_at"

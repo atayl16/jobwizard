@@ -9,7 +9,7 @@ class JobPosting < ApplicationRecord
   }
 
   # Status enum - string-backed for SQLite compatibility
-  enum :status, { suggested: 'suggested', applied: 'applied', ignored: 'ignored', exported: 'exported' }
+  enum :status, { suggested: 'suggested', applied: 'applied', rejected: 'rejected', ignored: 'ignored', exported: 'exported' }
 
   # Associations
   has_many :job_skill_assessments, dependent: :destroy
@@ -24,6 +24,8 @@ class JobPosting < ApplicationRecord
   scope :suggested_only, -> { where(status: 'suggested') }
   scope :active_board, -> { suggested_only }
   scope :board_visible, -> { suggested_only } # Defense in depth - same as active_board for now
+  scope :snoozed, -> { where.not(snooze_until: nil).where('snooze_until > ?', Time.current) }
+  scope :unsnoozed, -> { where('snooze_until IS NULL OR snooze_until <= ?', Time.current) }
 
   # Search scope (simple LIKE for SQLite compatibility)
   scope :search, lambda { |query|
@@ -43,6 +45,11 @@ class JobPosting < ApplicationRecord
     update!(status: 'applied', applied_at: Time.current)
   end
 
+  def mark_rejected!(reason: nil)
+    notes_text = reason ? "Rejected: #{reason}" : nil
+    update!(status: 'rejected', rejected_at: Time.current, rejected_reason: reason, notes: notes_text)
+  end
+
   def mark_exported!
     update!(status: 'exported', exported_at: Time.current)
   end
@@ -50,6 +57,14 @@ class JobPosting < ApplicationRecord
   def mark_ignored!(reason: nil)
     notes_text = reason ? "Ignored: #{reason}" : nil
     update!(status: 'ignored', ignored_at: Time.current, notes: notes_text)
+  end
+
+  def snooze_until!(datetime)
+    update!(snooze_until: datetime)
+  end
+
+  def snoozed?
+    snooze_until.present? && snooze_until > Time.current
   end
 
   # Return a summary of the job
