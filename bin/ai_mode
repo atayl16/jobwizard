@@ -1,0 +1,56 @@
+#!/bin/sh
+# AI Mode Switcher - toggles between co-driver and autopilot modes
+
+set -e
+
+MODE_FILE="$(dirname "$0")/../ai/mode.yml"
+MODE="${1:-}"
+
+usage() {
+  cat <<EOF
+Usage: bin/ai_mode <co-driver|autopilot>
+
+Switches AI pair programming mode.
+
+Modes:
+  co-driver  - AI proposes plans, shows diffs, waits for approval
+  autopilot  - AI implements end-to-end with small commits
+
+Current mode: $(grep '^mode:' "$MODE_FILE" 2>/dev/null | awk '{print $2}' || echo "unknown")
+
+Examples:
+  bin/ai_mode co-driver    # Switch to co-driver mode
+  bin/ai_mode autopilot    # Switch to autopilot mode
+EOF
+  exit 1
+}
+
+if [ -z "$MODE" ]; then
+  usage
+fi
+
+case "$MODE" in
+  co-driver|autopilot)
+    if [ -f "$MODE_FILE" ]; then
+      # Use sed to update mode line in-place
+      if command -v sed >/dev/null 2>&1; then
+        # macOS sed requires '' after -i
+        sed -i '' "s/^mode: .*/mode: $MODE/" "$MODE_FILE"
+        echo "✅ Mode switched to: $MODE"
+        echo "   Updated: $MODE_FILE"
+      else
+        echo "❌ sed not found"
+        exit 1
+      fi
+    else
+      echo "❌ Mode file not found: $MODE_FILE"
+      exit 1
+    fi
+    ;;
+  *)
+    echo "❌ Invalid mode: $MODE"
+    echo "   Valid modes: co-driver, autopilot"
+    usage
+    ;;
+esac
+

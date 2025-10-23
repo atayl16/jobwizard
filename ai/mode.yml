@@ -1,0 +1,18 @@
+# AI Pair Programming Mode Configuration
+# Read by AI at session start to determine behavior
+
+mode: co-driver
+
+approvals:
+  require_diff_approval: true
+  default_exclusions: []
+
+# Mode descriptions:
+# - co-driver: Propose plans, show diffs, wait for approval before applying changes
+# - autopilot: Implement end-to-end with small commits, fix failing tests automatically
+
+# Switch modes with: bin/ai_mode co-driver
+#                or: bin/ai_mode autopilot
+
+# Last updated: 2025-10-23
+
