@@ -6,6 +6,7 @@ class JobsController < ApplicationController
   # POST /jobs/fetch
   def fetch
     FetchJobsJob.perform_later
+    Rails.cache.write('job_fetch_last_run', Time.current)
     redirect_to jobs_path, notice: 'Job fetch started in background. Refresh in a few moments.'
   end
 
@@ -26,6 +27,9 @@ class JobsController < ApplicationController
 
     # Get source counts for the current filtered query
     @source_counts = @jobs.group(:source).count
+    
+    # Get last fetch time
+    @last_fetch = Rails.cache.read('job_fetch_last_run')
   end
 
   # GET /jobs/:id

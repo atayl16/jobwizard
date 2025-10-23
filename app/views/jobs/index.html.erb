@@ -4,7 +4,14 @@
       <h1 class="text-3xl font-bold text-gray-900 mb-2">Job Board</h1>
       <p class="text-gray-600">Curated job postings from selected companies. Click "Tailor & Export" to generate documents.</p>
     </div>
-    <%= button_to "Check for New Jobs", fetch_jobs_path, method: :post, class: "px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors" %>
+    <div class="text-right">
+      <%= button_to "Check for New Jobs", fetch_jobs_path, method: :post, class: "px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors", data: { turbo_frame: "_top" } %>
+      <% if @last_fetch %>
+        <p class="text-xs text-gray-500 mt-2">Last checked <%= time_ago_in_words(@last_fetch) %> ago</p>
+      <% else %>
+        <p class="text-xs text-gray-500 mt-2">Never checked yet</p>
+      <% end %>
+    </div>
   </div>
 
   <!-- Search and Filters -->
