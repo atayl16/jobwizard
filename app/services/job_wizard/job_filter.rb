@@ -26,13 +26,16 @@ module JobWizard
     # Determines if a job posting should be kept based on title, description, and optionally location
     # Returns true if the job passes all filters, false otherwise
     def keep?(title:, description:, location: nil)
+      # Rule 1: Check location restrictions FIRST - reject country-specific jobs (unless US)
+      return false if location_restricted?(location)
+
       # Combine title, description, and location for matching
       text = normalize_text("#{title} #{description} #{location}")
 
-      # Rule 1: Reject if ANY exclude keyword is present
+      # Rule 2: Reject if ANY exclude keyword is present
       return false if matches_any_exclude?(text)
 
-      # Rule 2: If require_include_match is true, must have at least one include keyword
+      # Rule 3: If require_include_match is true, must have at least one include keyword
       return false if @require_include_match && !matches_any_include?(text)
 
       # Passed all filters
@@ -40,6 +43,41 @@ module JobWizard
     end
 
     private
+
+    def location_restricted?(location)
+      return false if location.blank?
+
+      loc = normalize_text(location)
+
+      # Allow if explicitly US-related
+      return false if loc.match?(/\b(usa|us|united states|america)\b/)
+
+      # Allow if explicitly open/remote without country restriction
+      return false if loc.match?(/\b(remote|anywhere|worldwide|global|flexible|world wide)\b/i) && !loc.match?(/\b(country|countries)\b/)
+
+      # List of common countries (non-US) - if location contains ONLY these, reject
+      non_us_countries = %w[
+        afghanistan albania algeria argentina australia austria bangladesh belgium
+        brazil bulgaria cambodia canada chile china colombia croatia cuba denmark
+        egypt estonia finland france germany ghana greece hungary iceland india
+        indonesia iran iraq ireland israel italy japan jordan kenya korea kuwait
+        latvia lebanon lithuania luxembourg malaysia mexico morocco myanmar
+        netherlands new zealand nigeria norway pakistan philippines poland portugal
+        qatar romania russia saudi arabia singapore slovakia south africa spain
+        sri lanka sweden switzerland taiwan thailand turkey ukraine united kingdom
+        uk venezuela vietnam yemen zimbabwe
+      ]
+
+      # Check if location contains ONLY non-US countries
+      non_us_countries.each do |country|
+        # If location is just the country name or country + remote, reject it
+        if loc == country || loc == "#{country} remote" || loc == "remote #{country}"
+          return true
+        end
+      end
+
+      false
+    end
 
     def normalize_keywords(keywords)
       Array(keywords).map { |k| normalize_text(k) }
