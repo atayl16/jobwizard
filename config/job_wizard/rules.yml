@@ -146,14 +146,10 @@ job_filters_ruby:
     - "ruby engineer"
     - "backend ruby"
     - "full stack ruby"
-    - python
-    - django
-    - flask
     - backend
     - engineer
     - developer
     - software
-    - developer
     - programmer
     - remote
     - "software engineer"
@@ -162,6 +158,8 @@ job_filters_ruby:
     - rest
     - "full stack"
     - fullstack
+    # Note: Python/Django/Flask are NOT in include_keywords because you don't code in Python
+    # But jobs mentioning "Ruby OR Python" will still match because they mention Ruby
   exclude_keywords:
     # Non-dev roles
     - accountant
@@ -209,9 +207,6 @@ scoring_ruby:
     rails: 5.0
     "ruby on rails": 6.0
     ror: 4.0
-    python: 3.0
-    django: 2.5
-    flask: 2.0
     backend: 2.0
     api: 1.5
     rest: 1.5
@@ -226,6 +221,11 @@ scoring_ruby:
     react: 0.5
     javascript: 0.5
     typescript: 0.5
+    angular: 0.3
+    vue: 0.3
+    python: 0.2
+    django: 0.2
+    flask: 0.2
   penalties:
     accountant: -5.0
     accounting: -5.0
