@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'httparty'
+require 'ostruct'
 
 module JobWizard
   module Fetchers
