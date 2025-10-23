@@ -52,9 +52,6 @@ module JobWizard
       # Allow if explicitly US-related
       return false if loc.match?(/\b(usa|us|united states|america)\b/)
 
-      # Allow if explicitly open/remote without country restriction
-      return false if loc.match?(/\b(remote|anywhere|worldwide|global|flexible|world wide)\b/i) && !loc.match?(/\b(country|countries)\b/)
-
       # List of common countries (non-US) - if location contains ONLY these, reject
       non_us_countries = %w[
         afghanistan albania algeria argentina australia austria bangladesh belgium
@@ -71,7 +68,8 @@ module JobWizard
       # Check if location contains ONLY non-US countries
       non_us_countries.each do |country|
         # If location is just the country name or country + remote, reject it
-        if loc == country || loc == "#{country} remote" || loc == "remote #{country}"
+        # Match country at start of string or as standalone word
+        if loc.match?(/\b#{country}\b/i) && !loc.match?(/\b(usa|us|united states|america)\b/i)
           return true
         end
       end
