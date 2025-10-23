@@ -192,6 +192,21 @@ job_filters_ruby:
     - "new zealand only"
     - "latin america"
     - "south america"
+    - "philippines"
+    - "philippines remote"
+    - "philippines only"
+    - "vietnam"
+    - "vietnam remote"
+    - "thailand"
+    - "thailand remote"
+    - "indonesia"
+    - "indonesia remote"
+    - "malaysia"
+    - "malaysia remote"
+    - "taiwan"
+    - "taiwan remote"
+    - "hong kong"
+    - "hong kong remote"
     # Specific countries (non-US)
     - china
     - japan
@@ -199,6 +214,18 @@ job_filters_ruby:
     - brazil
     - mexico
     - argentina
+    - colombia
+    - chile
+    - peru
+    - poland
+    - romania
+    - "south africa"
+    - turkish
+    - turkey
+    - egypt
+    - pakistan
+    - bangladesh
+    - sri lanka
 
 # Scoring boosts and penalties for Ruby/Rails roles
 scoring_ruby:
