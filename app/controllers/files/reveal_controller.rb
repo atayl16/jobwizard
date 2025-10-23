@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-module Files
+class Files::RevealController < ApplicationController
   # Dev-only controller to reveal files in Finder/Explorer
-  class RevealController < ApplicationController
-    # POST /files/reveal
+  # POST /files/reveal
     def create
       unless Rails.env.development?
         head :forbidden
@@ -43,5 +42,4 @@ module Files
 
       redirect_back fallback_location: root_path, notice: 'Opened in file manager'
     end
-  end
 end
