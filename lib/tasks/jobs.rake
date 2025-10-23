@@ -283,6 +283,62 @@ namespace :jobs do
     puts "Removed #{count} old job posting(s)"
   end
 
+  desc 'Prune ignored jobs older than N days (default 30)'
+  task prune_ignored: :environment do
+    prune_days = ENV.fetch('JOB_WIZARD_PRUNE_DAYS', '30').to_i
+    cutoff_date = prune_days.days.ago
+
+    old_ignored = JobPosting.where(status: 'ignored')
+                            .where('last_seen_at IS NULL OR last_seen_at < ?', cutoff_date)
+                            .where('ignored_at < ?', cutoff_date)
+    
+    count = old_ignored.count
+    
+    if count.positive?
+      old_ignored.destroy_all
+      puts "✓ Removed #{count} ignored job(s) older than #{prune_days} days"
+    else
+      puts "No ignored jobs to prune"
+    end
+  end
+
+  desc 'Prune old output folders (keep last N, default 50)'
+  task prune_outputs: :environment do
+    keep_count = ENV.fetch('JOB_WIZARD_KEEP_OUTPUTS', '50').to_i
+    output_root = JobWizard::OUTPUT_ROOT
+
+    unless Dir.exist?(output_root)
+      puts "Output directory does not exist: #{output_root}"
+      exit 0
+    end
+
+    # Get all application folders sorted by modification time
+    folders = Dir.glob("#{output_root}/*").select { |f| File.directory?(f) }
+                 .sort_by { |f| File.mtime(f) }
+                 .reverse
+
+    if folders.length <= keep_count
+      puts "Keeping all #{folders.length} output folders"
+      exit 0
+    end
+
+    folders_to_delete = folders[keep_count..-1]
+    puts "Found #{folders.length} output folders, keeping latest #{keep_count}"
+    
+    deleted_count = 0
+    folders_to_delete.each do |folder|
+      begin
+        FileUtils.rm_rf(folder)
+        deleted_count += 1
+        puts "  Deleted: #{File.basename(folder)}"
+      rescue StandardError => e
+        puts "  ✗ Error deleting #{File.basename(folder)}: #{e.message}"
+      end
+    end
+
+    puts "✓ Removed #{deleted_count} old output folder(s)"
+  end
+
   desc 'Re-evaluate all existing jobs against current filter/scoring rules'
   task refilter: :environment do
     puts 'Re-evaluating all jobs against current rules...'
