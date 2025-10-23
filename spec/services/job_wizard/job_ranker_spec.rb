@@ -167,4 +167,3 @@ RSpec.describe JobWizard::JobRanker do
     end
   end
 end
-

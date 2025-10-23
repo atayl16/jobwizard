@@ -13,8 +13,9 @@ module JobWizard
   class ResumeBuilder
     attr_reader :job_description, :profile, :experience_loader, :claimed_skills, :not_claimed_skills, :allowed_skills
 
-    def initialize(job_description:, allowed_skills: nil)
+    def initialize(job_description:, allowed_skills: nil, job_posting: nil)
       @job_description = job_description
+      @job_posting = job_posting
       @profile = load_profile
       @experience_loader = ExperienceLoader.new
       @allowed_skills = allowed_skills
@@ -53,22 +54,18 @@ module JobWizard
     # Build cover letter PDF as string
     def build_cover_letter
       # Generate cover letter text using Writer
-      writer = WriterFactory.build
-      cover_letter_text = writer.cover_letter(
-        profile: profile,
-        experience: experience_loader,
-        jd_text: job_description,
-        company: extract_company_from_jd,
-        role: extract_role_from_jd,
-        allowed_skills: allowed_skills
-      )
+      cover_letter_result = generate_cover_letter_text
+      cover_letter_text = cover_letter_result.is_a?(Hash) ? cover_letter_result[:cover_letter] : cover_letter_result
+
+      # Store unverified skills if AI writer returned them
+      @unverified_skills = cover_letter_result.is_a?(Hash) ? cover_letter_result[:unverified_skills] : []
 
       # Render text into PDF
       Prawn::Document.new(page_size: 'LETTER', margin: 50) do |pdf|
         pdf.font 'Helvetica'
-        
+
         # Split text into lines and render
-        cover_letter_text.split("\n").each do |line|
+        cover_letter_text.to_s.split("\n").each do |line|
           if line.strip.empty?
             pdf.move_down 10
           else
@@ -79,7 +76,67 @@ module JobWizard
       end.render
     end
 
+    # Return unverified skills from AI generation (if any)
+    def unverified_skills
+      @unverified_skills || []
+    end
+
     private
+
+    def generate_cover_letter_text
+      writer_class = WriterFactory.build
+      profile_yaml = YAML.dump(profile)
+      experience_yaml = load_experience_yaml
+
+      # Prepare metadata for cost tracking
+      meta = {}
+      meta[:job_posting_id] = @job_posting.id if @job_posting
+
+      # Try AI writer first (returns instance with methods)
+      if writer_class == Writers::OpenAiWriter
+        begin
+          writer = writer_class.new
+          result = writer.cover_letter(
+            company: extract_company_from_jd,
+            role: extract_role_from_jd,
+            jd_text: job_description,
+            profile: profile_yaml,
+            experience: experience_yaml,
+            meta: meta
+          )
+
+          # If AI generation failed or returned error, fall back to templates
+          if result[:error] || result[:cover_letter].blank?
+            Rails.logger.warn 'AI cover letter generation failed, falling back to templates'
+            return fallback_to_template_writer
+          end
+
+          return result
+        rescue StandardError => e
+          Rails.logger.warn "Error using OpenAI writer: #{e.message}, falling back to templates"
+          return fallback_to_template_writer
+        end
+      end
+
+      # Use template writer (class method)
+      fallback_to_template_writer
+    end
+
+    def fallback_to_template_writer
+      Writers::TemplatesWriter.cover_letter(
+        profile: profile,
+        experience: experience_loader,
+        jd_text: job_description,
+        company: extract_company_from_jd,
+        role: extract_role_from_jd,
+        allowed_skills: allowed_skills
+      )
+    end
+
+    def load_experience_yaml
+      experience_path = JobWizard::CONFIG_PATH.join('experience.yml')
+      File.read(experience_path)
+    end
 
     def extract_company_from_jd
       # Try to extract company from JD, fallback to generic
@@ -105,13 +162,28 @@ module JobWizard
       @claimed_skills = []
       @not_claimed_skills = []
 
-      jd_skills.each do |skill|
-        # Use alias-aware skill checking
-        normalized_skill = experience_loader.normalize_skill_name(skill)
-        if experience_loader.has_skill?(normalized_skill) || experience_loader.has_skill_with_alias?(skill)
-          @claimed_skills << skill
-        else
-          @not_claimed_skills << skill
+      # If job_posting is provided, use effective skills service
+      if @job_posting
+        effective_service = EffectiveSkillsService.new(@job_posting)
+        effective_skills = effective_service.effective_skills
+
+        jd_skills.each do |skill|
+          if effective_skills.include?(skill.downcase)
+            @claimed_skills << skill
+          else
+            @not_claimed_skills << skill
+          end
+        end
+      else
+        # Fallback to original logic
+        jd_skills.each do |skill|
+          # Use alias-aware skill checking
+          normalized_skill = experience_loader.normalize_skill_name(skill)
+          if experience_loader.has_skill?(normalized_skill) || experience_loader.has_skill_with_alias?(skill)
+            @claimed_skills << skill
+          else
+            @not_claimed_skills << skill
+          end
         end
       end
     end

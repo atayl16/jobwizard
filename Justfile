@@ -53,6 +53,14 @@ rollback:
 db-reset:
   bin/rails db:reset
 
-# Run full CI checks (lint + security + tests)
-ci: lint sec test
+# Validate YAML configuration files
+yaml-validate:
+  bundle exec rake yaml:validate
+
+# Show YAML configuration summary
+yaml-summary:
+  bundle exec rake yaml:summary
+
+# Run full CI checks (lint + security + yaml + tests)
+ci: lint sec yaml-validate test
 

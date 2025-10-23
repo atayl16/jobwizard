@@ -220,3 +220,40 @@ ranking_ruby:
 # UI labels for active filter state
 ui_ruby:
   active_filter_label: "Showing Ruby / Rails roles only"
+
+# Advanced filtering rules (non-destructive addition)
+filters:
+  company_blocklist:
+    # exact or regex (string starting/ending with "/"), case-insensitive
+    # examples:
+    # - "Instacart"
+    # - "/^CyberCoders$/i"
+    - ""
+  content_blocklist:
+    - "nsfw"
+    - "adult entertainment"
+    - "porn"
+    - "gambling"
+    - "casino"
+    - "sportsbook"
+    - "crypto casino"
+  require_no_security_clearance: true
+  allow_background_checks: true
+  allowed_phrases:
+    - "background check"
+    - "background screening"
+  excluded_phrases:
+    - "active security clearance"
+    - "secret clearance"
+    - "ts/sci"
+    - "dod clearance"
+  # keep Ruby/Rails signal strong
+  required_keywords:
+    - "ruby"
+    - "rails"
+  excluded_keywords:
+    - "php"
+    - "dotnet"
+    - ".net"
+    - "golang"
+    - "cobol"

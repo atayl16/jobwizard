@@ -117,8 +117,15 @@ module JobWizard
     # Convert string to filesystem-safe slug
     # "Acme Corp & Co." => "AcmeCorp"
     # "Senior Engineer (Remote)" => "SeniorEngineerRemote"
+    # SECURITY: Rejects path traversal patterns
     def slugify(text)
-      text
+      # Reject dangerous patterns FIRST (before any transformations)
+      text_str = text.to_s
+      if text_str =~ /\.\./ || text_str =~ %r{[/\\]}
+        raise ArgumentError, "Invalid path characters detected: #{text_str.inspect}"
+      end
+
+      text_str
         .gsub(/[^\w\s-]/, '') # Remove special characters
         .gsub(/\s+/, '')       # Remove spaces
         .gsub(/-+/, '')        # Remove hyphens

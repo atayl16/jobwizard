@@ -54,5 +54,114 @@
       </div>
     </div>
   </div>
+
+  <!-- Skill Assessment Section -->
+  <div class="max-w-none mt-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Skill Assessment</h2>
+    
+    <!-- Summary Banner -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <span class="text-blue-800 font-medium">
+          This job will tailor using <%= @skill_summary[:total_effective] %> verified skills; 
+          <%= @skill_summary[:excluded_count] %> excluded.
+        </span>
+      </div>
+    </div>
+    
+    <!-- Proficiency Scale Legend -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+      <h3 class="text-sm font-medium text-blue-900 mb-2">Proficiency Scale</h3>
+      <div class="grid grid-cols-5 gap-2 text-xs text-blue-800">
+        <div><strong>1 - Beginner:</strong> Basic understanding, can follow tutorials</div>
+        <div><strong>2 - Novice:</strong> Can work with guidance, limited experience</div>
+        <div><strong>3 - Intermediate:</strong> Can work independently, solid foundation</div>
+        <div><strong>4 - Advanced:</strong> Can solve complex problems, mentor others</div>
+        <div><strong>5 - Expert:</strong> Deep expertise, can architect solutions</div>
+      </div>
+      <p class="text-xs text-blue-700 mt-2">
+        <strong>Threshold:</strong> Skills rated 3+ (Intermediate or above) are included in your resume.
+      </p>
+    </div>
+    
+    <!-- Skills Table -->
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Skill</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Have</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proficiency</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @extracted_skills.each do |skill| %>
+            <% assessment = @existing_assessments[skill] %>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <%= skill.titleize %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <%= form_with model: assessment || @job.job_skill_assessments.build, 
+                              url: assessment ? job_job_skill_assessment_path(@job, assessment) : job_job_skill_assessments_path(@job),
+                              method: assessment ? :patch : :post,
+                              local: true, 
+                              class: "inline-block" do |form| %>
+                  <%= form.hidden_field :skill_name, value: skill %>
+                  <%= form.select :have, 
+                                  options_for_select([['Yes', true], ['No', false]], assessment&.have),
+                                  { prompt: 'Select...' },
+                                  { class: "text-sm border-gray-300 rounded-md", 
+                                    onchange: "this.form.submit()" } %>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% if assessment&.have? %>
+                  <%= form_with model: assessment, 
+                                url: job_job_skill_assessment_path(@job, assessment),
+                                method: :patch,
+                                local: true, 
+                                class: "inline-block" do |form| %>
+                    <%= form.hidden_field :skill_name, value: skill %>
+                    <%= form.hidden_field :have, value: true %>
+                    <%= form.select :proficiency, 
+                                    options_for_select([
+                                      ['1 - Beginner', 1],
+                                      ['2 - Novice', 2], 
+                                      ['3 - Intermediate', 3],
+                                      ['4 - Advanced', 4],
+                                      ['5 - Expert', 5]
+                                    ], assessment.proficiency),
+                                    { prompt: 'Select proficiency...' },
+                                    { class: "text-sm border-gray-300 rounded-md", 
+                                      onchange: "this.form.submit()" } %>
+                  <% end %>
+                <% else %>
+                  <span class="text-gray-400 text-sm">N/A</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <% if assessment %>
+                  <span class="text-green-600">✓ Saved</span>
+                <% else %>
+                  <span class="text-gray-400">Not set</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      
+      <% if @extracted_skills.empty? %>
+        <div class="px-6 py-4 text-center text-gray-500">
+          No common skills detected in job description.
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
 

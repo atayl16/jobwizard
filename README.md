@@ -7,6 +7,7 @@ A Rails 8 application that generates human-sounding, truth-only résumé and cov
 ✨ **Manual Application Generator**
 - Paste any job description
 - Generates tailored resume.pdf and cover_letter.pdf
+- **Optional AI-powered generation** (OpenAI GPT-4o-mini) or template-based
 - Only uses verified information from your profile
 - Flags unverified skills and job requirements
 
@@ -15,6 +16,10 @@ A Rails 8 application that generates human-sounding, truth-only résumé and cov
 - Pre-scans for red flags and requirements
 - One-click "Tailor & Export" PDF generation
 - Background job processing
+- **Search & filters**: Search by company/title/keywords, filter by date and score
+- **Smart status tracking**: Jobs stay ignored/applied after refetch
+- **Deduplication**: Prevents duplicate jobs from multiple fetches
+- **"Check for New Jobs" button**: Manual fetch trigger with background processing
 
 🗂️ **Smart File Organization**
 - Saves to: `~/Documents/JobWizard/Applications/<Company>/<Role>/<YYYY-MM-DD>/`
@@ -27,6 +32,19 @@ A Rails 8 application that generates human-sounding, truth-only résumé and cov
 - Never fabricates skills or experience
 - Flags skills not in your verified experience
 - Red-flag scanner warns about problematic requirements
+
+🚫 **Smart Filtering**
+- Automatically blocks NSFW, gambling, and adult content
+- Filters out security clearance requirements
+- Maintains Ruby/Rails focus with keyword requirements
+- Company blocklist with regex support
+- Manual "Block Company" action from job board
+
+💰 **AI Cost Tracking** (Optional)
+- Tracks OpenAI API usage and costs (gpt-4o-mini: ~$0.002 per application)
+- Month-to-date dashboard display
+- Detailed usage ledger at `/ai/usages`
+- Historical cost tracking persists even if API key removed
 
 ## Quick Start
 
@@ -80,7 +98,25 @@ positions:
 
 **`config/job_wizard/rules.yml`** (already configured with sensible defaults)
 
-### 4. Start the Server
+### 4. (Optional) Enable AI Generation
+
+JobWizard can use OpenAI to generate more natural, tailored content. **This is completely optional** - the app works great with template-based generation.
+
+```bash
+# Get your API key from https://platform.openai.com/api-keys
+export OPENAI_API_KEY=sk-your-key-here
+
+# Test it
+rake ai:cover_letter["Acme Corp","Senior Rails Engineer"]
+```
+
+Cost: ~$0.001 per application with gpt-4o-mini (one-tenth of a cent).
+
+See **[docs/AI_WRITER_SETUP.md](docs/AI_WRITER_SETUP.md)** for full configuration options and troubleshooting.
+
+**Without an API key**: The app automatically uses high-quality template-based generation instead.
+
+### 5. Start the Server
 ```bash
 bin/dev
 ```
@@ -207,23 +243,53 @@ Visit `/applications/new` for the classic form with more detailed flags and anal
 
 ### Automated Job Board
 
-**Fetch jobs from specific companies:**
-```bash
-rake jobs:fetch[greenhouse,airbnb]
-rake jobs:fetch[lever,netflix]
-rake jobs:fetch[greenhouse,stripe]
+### Configuring Job Sources
+
+Edit `config/job_wizard/sources.yml` to add companies you want to track:
+
+```yaml
+sources:
+  - provider: greenhouse
+    slug: instacart
+    name: Instacart
+    active: true
+
+  - provider: lever
+    slug: figma
+    name: Figma
+    active: true
 ```
 
-**Fetch all active sources and optionally generate PDFs:**
+**Finding Company Slugs:**
+- **Greenhouse**: Visit careers page, look for `boards.greenhouse.io/<SLUG>` (examples: `gitlab`, `shopify`, `stripe`)
+- **Lever**: Visit careers page, look for `jobs.lever.co/<SLUG>` (examples: `canva`, `notion`, `figma`)
+- **SmartRecruiters**: Check careers page source for `smartrecruiters.com`
+- **Personio**: Look for `<SLUG>.jobs.personio.de` (common in Europe)
+
+### Fetching Jobs
+
+**Fetch from all active sources in sources.yml:**
 ```bash
-rake jobs:board              # Fetch only
-rake jobs:board[true]        # Fetch and generate PDFs
+rake jobs:fetch_all
 ```
+
+**Or click "Check for New Jobs" button in the UI** (runs in background)
 
 **View the job board:**
 Visit http://localhost:3000/jobs
 
-Click any job → "Tailor & Export" to generate PDFs in the background
+Click any job → "Tailor & Export" to generate PDFs
+
+### Filter Management
+
+**Block companies from job board:**
+Click "Block" on any job row to immediately hide all jobs from that company.
+
+**Manage filters:**
+Visit `/settings/filters` to:
+- Add/remove blocked companies (exact match or regex)
+- View current filtering rules
+- See YAML-defined blocklists
 
 ### Rake Tasks
 

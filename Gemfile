@@ -47,8 +47,14 @@ gem "thruster", require: false
 gem "prawn"
 gem "prawn-table"
 
+# OpenAI integration for AI-powered resume/cover letter generation
+gem "ruby-openai", require: "openai"
+
 # HTTP client for fetching jobs from APIs
 gem "httparty"
+
+# Pagination
+gem "kaminari"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

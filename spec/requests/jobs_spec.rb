@@ -1,67 +1,72 @@
-# frozen_string_literal: true
-
 require 'rails_helper'
 
 RSpec.describe 'Jobs', type: :request do
+  describe 'PATCH /jobs/:id/applied' do
+    let!(:job) { JobPosting.create!(title: 'Test Job', company: 'Test Co', url: 'https://example.com/1', description: 'Test') }
+
+    it 'marks job as applied and redirects' do
+      patch applied_job_path(job)
+
+      expect(response).to redirect_to(jobs_path)
+      expect(flash[:notice]).to eq('Job marked as applied')
+
+      job.reload
+      expect(job.status).to eq('applied')
+      expect(job.applied_at).to be_present
+    end
+  end
+
+  describe 'PATCH /jobs/:id/exported' do
+    let!(:job) { JobPosting.create!(title: 'Test Job', company: 'Test Co', url: 'https://example.com/2', description: 'Test') }
+
+    it 'marks job as exported and redirects' do
+      patch exported_job_path(job)
+
+      expect(response).to redirect_to(jobs_path)
+      expect(flash[:notice]).to eq('Job marked as exported and hidden from suggestions')
+
+      job.reload
+      expect(job.status).to eq('exported')
+      expect(job.exported_at).to be_present
+    end
+  end
+
+  describe 'PATCH /jobs/:id/ignore' do
+    let!(:job) { JobPosting.create!(title: 'Test Job', company: 'Test Co', url: 'https://example.com/3', description: 'Test') }
+
+    it 'marks job as ignored and redirects' do
+      patch ignore_job_path(job)
+
+      expect(response).to redirect_to(jobs_path)
+      expect(flash[:notice]).to eq('Job ignored')
+
+      job.reload
+      expect(job.status).to eq('ignored')
+    end
+  end
+
   describe 'GET /jobs' do
-    let!(:high_score_job) do
-      JobPosting.create!(
-        company: 'Rails Shop',
-        title: 'Ruby on Rails Engineer',
-        description: 'Build with Rails and RSpec',
-        url: 'https://example.com/rails-job',
-        score: 15.5
-      )
-    end
+    let!(:suggested_job) { JobPosting.create!(title: 'Suggested Job Position', company: 'Test', url: 'https://example.com/4', description: 'Test', status: 'suggested') }
+    let!(:applied_job) { JobPosting.create!(title: 'Applied Job Position', company: 'Test', url: 'https://example.com/5', description: 'Test', status: 'applied') }
+    let!(:exported_job) { JobPosting.create!(title: 'Exported Job Position', company: 'Test', url: 'https://example.com/6', description: 'Test', status: 'exported') }
+    let!(:ignored_job) { JobPosting.create!(title: 'Ignored Job Position', company: 'Test', url: 'https://example.com/7', description: 'Test', status: 'ignored') }
 
-    let!(:medium_score_job) do
-      JobPosting.create!(
-        company: 'Mixed Stack',
-        title: 'Full Stack Engineer',
-        description: 'Ruby and React',
-        url: 'https://example.com/fullstack-job',
-        score: 8.0
-      )
-    end
-
-    let!(:low_score_job) do
-      JobPosting.create!(
-        company: 'Frontend Co',
-        title: 'React Developer',
-        description: 'Build with React',
-        url: 'https://example.com/react-job',
-        score: 2.0
-      )
-    end
-
-    it 'sorts jobs by score descending' do
+    it 'only shows suggested jobs' do
       get jobs_path
 
-      expect(response).to have_http_status(:success)
-      
-      # Check that jobs are in score order in the response body
-      body = response.body
-      rails_position = body.index('Ruby on Rails Engineer')
-      fullstack_position = body.index('Full Stack Engineer')
-      react_position = body.index('React Developer')
-
-      expect(rails_position).to be < fullstack_position
-      expect(fullstack_position).to be < react_position
+      expect(response.body).to include('Suggested Job Position')
+      expect(response.body).not_to include('Applied Job Position')
+      expect(response.body).not_to include('Exported Job Position')
+      expect(response.body).not_to include('Ignored Job Position')
     end
+  end
 
-    it 'displays the active filter label' do
-      get jobs_path
+  describe 'GET /jobs/:id with invalid id' do
+    it 'redirects to jobs index with alert message' do
+      get job_path(id: 999_999)
 
-      expect(response.body).to include('Showing Ruby / Rails roles only')
-    end
-
-    it 'loads rules in controller' do
-      get jobs_path
-
-      # Just verify the response includes content that shows rules were loaded
-      expect(response.body).to include('Job Board')
-      expect(response).to have_http_status(:success)
+      expect(response).to redirect_to(jobs_path)
+      expect(flash[:alert]).to eq('Job posting not found or has been removed')
     end
   end
 end
-

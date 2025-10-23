@@ -1,7 +1,7 @@
 # AI Pair Programming Mode Configuration
 # Read by AI at session start to determine behavior
 
-mode: co-driver
+mode: co-driver  # Options: co-driver | autopilot
 
 approvals:
   require_diff_approval: true

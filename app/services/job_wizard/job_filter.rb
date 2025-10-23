@@ -14,7 +14,7 @@ module JobWizard
     def initialize(rules_hash)
       @include_keywords = normalize_keywords(rules_hash['include_keywords'] || rules_hash[:include_keywords] || [])
       @exclude_keywords = normalize_keywords(rules_hash['exclude_keywords'] || rules_hash[:exclude_keywords] || [])
-      
+
       # Check ranking rules for require_include_match (may be passed in rules_hash or need to get from Rules.current.ranking)
       @require_include_match = if rules_hash.key?('require_include_match') || rules_hash.key?(:require_include_match)
                                  rules_hash['require_include_match'] || rules_hash[:require_include_match]
@@ -47,7 +47,7 @@ module JobWizard
 
     def normalize_text(text)
       return '' if text.nil?
-      
+
       # Convert to lowercase, normalize punctuation/hyphens, and whitespace
       text.to_s
           .downcase
@@ -72,4 +72,3 @@ module JobWizard
     end
   end
 end
-

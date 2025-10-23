@@ -1,8 +1,53 @@
 <div class="max-w-6xl mx-auto py-8 px-4">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-2">Job Board</h1>
-    <p class="text-gray-600">Curated job postings from selected companies. Click "Tailor & Export" to generate documents.</p>
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Job Board</h1>
+      <p class="text-gray-600">Curated job postings from selected companies. Click "Tailor & Export" to generate documents.</p>
+    </div>
+    <%= button_to "Check for New Jobs", fetch_jobs_path, method: :post, class: "px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors" %>
   </div>
+
+  <!-- Search and Filters -->
+  <div class="mb-6 bg-white border border-gray-200 rounded-lg p-4">
+    <%= form_with url: jobs_path, method: :get, local: true, class: "space-y-4" do |form| %>
+      <div class="flex gap-4 items-end">
+        <div class="flex-1">
+          <%= form.label :q, "Search", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :q, value: params[:q], placeholder: "Company, title, or keywords...", class: "w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        
+        <div>
+          <%= form.label :days, "Posted Within", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :days, [["Any time", ""], ["7 days", "7"], ["14 days", "14"], ["30 days", "30"]], { selected: params[:days] }, class: "border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        
+        <div>
+          <%= form.label :min_score, "Min Score", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.number_field :min_score, value: params[:min_score], placeholder: "0-100", min: 0, max: 100, class: "w-24 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        
+        <div class="flex gap-2">
+          <%= form.submit "Search", class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium" %>
+          <%= link_to "Clear", jobs_path, class: "px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm font-medium" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Source Counts Badge -->
+  <% if @source_counts.any? %>
+    <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <div class="flex items-center gap-4 flex-wrap">
+        <span class="text-sm font-medium text-gray-700">Sources:</span>
+        <% @source_counts.each do |source, count| %>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <%= source.titleize %>: <%= count %>
+          </span>
+        <% end %>
+        <span class="text-xs text-gray-500 ml-auto">Total: <%= @source_counts.values.sum %> jobs</span>
+      </div>
+    </div>
+  <% end %>
 
   <% if @rules&.ui && @rules.ui['active_filter_label'].present? %>
     <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -28,6 +73,9 @@
                 <% if job.remote? %>
                   <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-medium">Remote</span>
                 <% end %>
+                <% if job.source.present? %>
+                  <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium"><%= job.source.titleize %></span>
+                <% end %>
               </div>
               <p class="text-gray-700 font-medium mb-1"><%= job.company %></p>
               <p class="text-sm text-gray-600 mb-3">
@@ -42,7 +90,27 @@
             </div>
             <div class="ml-4 flex flex-col gap-2">
               <%= link_to "Apply →", job.url, target: "_blank", rel: "noopener noreferrer", class: "px-4 py-2 text-white font-semibold rounded-lg transition-colors whitespace-nowrap text-center", style: "background-color: #16a34a;" %>
-              <%= button_to "Tailor & Export", tailor_job_path(job), method: :post, class: "px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap" %>
+              
+              <% if job.generated_today? %>
+                <!-- Already generated today -->
+                <div class="px-4 py-2 bg-green-100 text-green-800 font-semibold rounded-lg whitespace-nowrap text-center text-sm">
+                  ✓ Generated <%= time_ago_in_words(job.exported_at) %> ago
+                </div>
+                <% if job.latest_application&.output_path.present? %>
+                  <%= link_to "View PDFs", application_path(job.latest_application), class: "px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap text-center" %>
+                <% else %>
+                  <%= button_to "Generate Again", tailor_job_path(job), method: :post, class: "px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap" %>
+                <% end %>
+              <% else %>
+                <!-- Not generated yet -->
+                <%= button_to "Tailor & Export", tailor_job_path(job), method: :post, class: "px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap" %>
+              <% end %>
+              
+              <div class="flex gap-1">
+                <%= button_to "Applied", applied_job_path(job), method: :patch, class: "px-3 py-1 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors" %>
+                <%= button_to "Ignore", ignore_job_path(job), method: :patch, class: "px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors" %>
+                <%= button_to "Block", filters_block_company_path, method: :post, params: { company_name: job.company }, class: "px-3 py-1 bg-red-800 text-white text-sm rounded hover:bg-red-900 transition-colors", confirm: "Block all jobs from #{job.company}?" %>
+              </div>
             </div>
           </div>
         </div>

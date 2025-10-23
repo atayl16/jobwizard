@@ -16,9 +16,9 @@ module JobWizard
       @boosts = normalize_keywords_hash(scoring_hash['boosts'] || scoring_hash[:boosts] || {})
       @penalties = normalize_keywords_hash(scoring_hash['penalties'] || scoring_hash[:penalties] || {})
       @neutral_or_low = normalize_keywords_hash(scoring_hash['neutral_or_low'] || scoring_hash[:neutral_or_low] || {})
-      
+
       @min_keep_score = (ranking_hash['min_keep_score'] || ranking_hash[:min_keep_score] || 1.0).to_f
-      
+
       # Create a filter instance to check if job would be filtered out
       @filter = JobFilter.new(Rules.current.job_filters.merge(ranking_hash))
     end
@@ -34,10 +34,10 @@ module JobWizard
 
       # Calculate base score from boosts
       calculated_score = calculate_boosts(text)
-      
+
       # Add neutral/low value keywords
       calculated_score += calculate_neutral(text)
-      
+
       # Subtract penalties
       calculated_score -= calculate_penalties(text)
 
@@ -48,12 +48,12 @@ module JobWizard
     private
 
     def normalize_keywords_hash(hash)
-      Hash[hash.map { |k, v| [normalize_text(k), v.to_f] }]
+      hash.to_h { |k, v| [normalize_text(k), v.to_f] }
     end
 
     def normalize_text(text)
       return '' if text.nil?
-      
+
       # Convert to lowercase, normalize punctuation/hyphens, and whitespace
       text.to_s
           .downcase
@@ -89,4 +89,3 @@ module JobWizard
     end
   end
 end
-

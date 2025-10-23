@@ -22,8 +22,8 @@
   </div>
 
   <% if app.pdfs_ready? %>
-    <!-- Download Links -->
-    <div class="flex flex-wrap gap-2 mb-2">
+    <!-- Download Links & Actions -->
+    <div class="flex flex-wrap items-center gap-2 mb-2">
       <%= link_to resume_application_path(app), class: 'inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium' do %>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -37,20 +37,20 @@
         </svg>
         Cover Letter
       <% end %>
-    </div>
 
-    <!-- Disk Path -->
-    <% if app.output_path.present? %>
-      <details class="text-xs">
-        <summary class="text-gray-500 hover:text-gray-700 cursor-pointer">Show disk path</summary>
-        <div class="mt-1 p-2 bg-gray-50 rounded border border-gray-200">
-          <code class="text-xs text-gray-700 break-all"><%= app.output_path %></code>
-          <% if Rails.env.development? %>
-            <%= button_to 'Reveal', files_reveal_path, params: { path: app.output_path }, method: :post, class: 'mt-1 text-xs text-blue-600 hover:text-blue-800', form: { data: { turbo: false } } %>
-          <% end %>
-        </div>
-      </details>
-    <% end %>
+      <% if app.output_path.present? %>
+        <%= button_to files_reveal_path, 
+            params: { path: app.output_path }, 
+            method: :post, 
+            class: 'inline-flex items-center gap-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded transition-colors', 
+            form: { data: { turbo: false } } do %>
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+          </svg>
+          <span>Open Folder</span>
+        <% end %>
+      <% end %>
+    </div>
   <% end %>
 </div>
 

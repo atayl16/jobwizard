@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe JobWizard::Rules do
-  let(:temp_rules_path) { Rails.root.join('tmp', 'test_rules.yml') }
-  
+  let(:temp_rules_path) { Rails.root.join('tmp/test_rules.yml') }
+
   after do
-    File.delete(temp_rules_path) if File.exist?(temp_rules_path)
+    FileUtils.rm_f(temp_rules_path)
     described_class.reset!
   end
 
@@ -42,7 +42,7 @@ RSpec.describe JobWizard::Rules do
 
       it 'returns the primary key value' do
         rules = described_class.new(temp_rules_path)
-        expect(rules.job_filters['include_keywords']).to eq(['primary', 'key'])
+        expect(rules.job_filters['include_keywords']).to eq(%w[primary key])
       end
     end
 
@@ -58,7 +58,7 @@ RSpec.describe JobWizard::Rules do
 
       it 'returns the fallback key value' do
         rules = described_class.new(temp_rules_path)
-        expect(rules.job_filters['include_keywords']).to eq(['fallback', 'key'])
+        expect(rules.job_filters['include_keywords']).to eq(%w[fallback key])
       end
     end
 
@@ -122,7 +122,7 @@ RSpec.describe JobWizard::Rules do
           min_keep_score: 1.0
       YAML
       File.write(temp_rules_path, rules_content)
-      
+
       rules = described_class.new(temp_rules_path)
       expect(rules.ranking['min_keep_score']).to eq(2.0)
     end
@@ -137,7 +137,7 @@ RSpec.describe JobWizard::Rules do
           active_filter_label: "Fallback Label"
       YAML
       File.write(temp_rules_path, rules_content)
-      
+
       rules = described_class.new(temp_rules_path)
       expect(rules.ui['active_filter_label']).to eq('Primary Label')
     end
@@ -176,4 +176,3 @@ RSpec.describe JobWizard::Rules do
     end
   end
 end
-

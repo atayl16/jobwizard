@@ -1,0 +1,60 @@
+# Job sources configuration
+# Add companies you want to track here. JobWizard will fetch from their public job boards.
+#
+# Supported providers:
+# - greenhouse: boards.greenhouse.io/<org>
+# - lever: api.lever.co/v0/postings/<company>
+# - smartrecruiters: api.smartrecruiters.com/v1/companies/<company>/postings
+# - personio: XML feed at <company>.jobs.personio.de/xml
+#
+# To find a company's slug:
+# - Greenhouse: Visit their careers page, look for boards.greenhouse.io/<ORG>
+# - Lever: Visit careers page, look for jobs.lever.co/<COMPANY>
+# - SmartRecruiters: Check careers page source for smartrecruiters.com
+# - Personio: Look for *.jobs.personio.de domain
+
+sources:
+  # Greenhouse companies
+  - provider: greenhouse
+    slug: instacart
+    name: Instacart
+    active: true
+
+  # Lever companies  
+  - provider: lever
+    slug: figma
+    name: Figma
+    active: true
+    
+  - provider: lever
+    slug: netflix
+    name: Netflix
+    active: true
+
+  # SmartRecruiters companies
+  - provider: smartrecruiters
+    slug: Bosch
+    name: Bosch
+    active: false  # Example - enable if interested
+
+  # Personio companies
+  - provider: personio
+    slug: demodesk  # Example: demodesk.jobs.personio.de
+    name: Demodesk
+    active: false  # Example - enable if interested
+
+# Ruby/Rails-friendly companies to consider adding:
+#
+# Greenhouse:
+#   - gitlab, shopify, github, stripe, coinbase, dropbox, reddit
+#   - thoughtbot, basecamp, heroku, twilio
+#
+# Lever:
+#   - canva, notion, airtable, figma, postman
+#
+# SmartRecruiters:
+#   - Many enterprise companies use this platform
+#
+# Personio:
+#   - Common in European startups
+

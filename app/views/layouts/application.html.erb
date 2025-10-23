@@ -26,7 +26,7 @@
     <!-- Sticky Header -->
     <header class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
+        <%= link_to root_path, class: "flex items-center gap-3 hover:opacity-80 transition-opacity" do %>
           <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
@@ -34,9 +34,15 @@
             <h1 class="text-xl font-bold text-gray-900">JobWizard</h1>
             <p class="text-xs text-gray-500">Application Assistant</p>
           </div>
-        </div>
+        <% end %>
         
         <div class="flex items-center gap-4">
+          <nav class="flex space-x-4">
+            <%= link_to "Jobs", jobs_path, class: "text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+            <%= link_to "New Application", new_application_path, class: "text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+            <%= link_to "Settings", settings_filters_path, class: "text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+          </nav>
+          
           <div class="hidden md:flex items-center gap-2 text-sm text-gray-600">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>

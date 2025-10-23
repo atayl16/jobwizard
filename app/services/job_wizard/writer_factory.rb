@@ -13,10 +13,10 @@ module JobWizard
           Writers::TemplatesWriter
         end
       when 'openai'
-        if ENV['OPENAI_API_KEY'].present?
-          Writers::OpenaiWriter
+        if ENV['OPENAI_API_KEY'].present? && JobWizard.openai_client
+          Writers::OpenAiWriter
         else
-          Rails.logger.warn 'AI_WRITER=openai but OPENAI_API_KEY not set, falling back to templates'
+          Rails.logger.warn 'AI_WRITER=openai but OPENAI_API_KEY not set or client unavailable, falling back to templates'
           Writers::TemplatesWriter
         end
       else

@@ -1,0 +1,137 @@
+<% content_for :title, "All Applications" %>
+
+<div class="max-w-7xl mx-auto py-8 px-4">
+  <div class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">All Applications</h1>
+      <p class="text-gray-600">Browse and search all generated application documents</p>
+    </div>
+    <%= link_to new_application_path, class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2" do %>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      <span>New Application</span>
+    <% end %>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="mb-6 bg-white border border-gray-200 rounded-lg p-4">
+    <%= form_with url: applications_path, method: :get, local: true, class: "space-y-4" do |form| %>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="md:col-span-2">
+          <%= form.label :q, "Search", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :q, value: params[:q], placeholder: "Company or role...", class: "w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        
+        <div>
+          <%= form.label :status, "Status", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :status, [["All", ""], ["Draft", "draft"], ["Generated", "generated"], ["Error", "error"]], { selected: params[:status] }, class: "w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+        
+        <div class="flex items-end gap-2">
+          <%= form.submit "Search", class: "px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium" %>
+          <%= link_to "Clear", applications_path, class: "px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors text-sm font-medium" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Results Count -->
+  <div class="mb-4 text-sm text-gray-600">
+    Showing <%= @applications.count %> of <%= @applications.total_count %> applications
+  </div>
+
+  <!-- Applications Table -->
+  <% if @applications.any? %>
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @applications.each do |app| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= app.created_at.strftime("%b %d, %Y") %>
+                <div class="text-xs text-gray-500"><%= app.created_at.strftime("%I:%M %p") %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900"><%= app.company %></div>
+                <% if app.job_posting %>
+                  <%= link_to "View Job", job_path(app.job_posting), class: "text-xs text-blue-600 hover:text-blue-800" %>
+                <% end %>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-900"><%= app.role %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% case app.status %>
+                <% when "generated" %>
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    ✓ Generated
+                  </span>
+                <% when "draft" %>
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    Draft
+                  </span>
+                <% when "error" %>
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    Error
+                  </span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex items-center gap-2">
+                  <%= link_to "View", application_path(app), class: "text-blue-600 hover:text-blue-900" %>
+                  <% if app.pdfs_ready? %>
+                    <span class="text-gray-300">|</span>
+                    <%= button_to files_reveal_path, params: { path: app.output_path }, method: :post, class: "text-green-600 hover:text-green-900", form: { data: { turbo: false } } do %>
+                      Open
+                    <% end %>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-6 flex items-center justify-between">
+      <div class="text-sm text-gray-600">
+        Page <%= @applications.current_page %> of <%= @applications.total_pages %>
+      </div>
+      <div class="flex gap-2">
+        <% if @applications.prev_page %>
+          <%= link_to applications_path(page: @applications.prev_page, q: params[:q], status: params[:status]), class: "px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+            ← Previous
+          <% end %>
+        <% end %>
+        <% if @applications.next_page %>
+          <%= link_to applications_path(page: @applications.next_page, q: params[:q], status: params[:status]), class: "px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
+            Next →
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No applications found</h3>
+      <p class="mt-1 text-sm text-gray-500">Get started by creating your first application.</p>
+      <div class="mt-6">
+        <%= link_to "Create Application", new_application_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+

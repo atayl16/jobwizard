@@ -84,7 +84,7 @@ RSpec.describe JobWizard::RulesScanner do
       let(:clean_jd) do
         <<~JD
           Senior Ruby on Rails Developer
-          
+
           We are seeking an experienced Rails developer for a remote position.
           You will work with PostgreSQL, Redis, and modern JavaScript frameworks.
           Competitive salary and benefits package.
@@ -111,57 +111,57 @@ RSpec.describe JobWizard::RulesScanner do
 
       it 'categorizes verified skills correctly' do
         result = scanner.scan(jd_with_mixed_skills)
-        
+
         # Ruby on Rails should be verified (not in unverified or not_claimed)
-        unverified_skills = result[:unverified_skills].map { |s| s[:skill] }
-        not_claimed_skills = result[:not_claimed_skills].map { |s| s[:skill] }
-        
+        unverified_skills = result[:unverified_skills].pluck(:skill)
+        not_claimed_skills = result[:not_claimed_skills].pluck(:skill)
+
         expect(unverified_skills).not_to include('Ruby on Rails')
         expect(not_claimed_skills).not_to include('Ruby on Rails')
       end
 
       it 'recognizes skill aliases as verified' do
         result = scanner.scan(jd_with_mixed_skills)
-        
+
         # Rails should be recognized via alias
-        unverified_skills = result[:unverified_skills].map { |s| s[:skill] }
-        not_claimed_skills = result[:not_claimed_skills].map { |s| s[:skill] }
-        
+        unverified_skills = result[:unverified_skills].pluck(:skill)
+        not_claimed_skills = result[:not_claimed_skills].pluck(:skill)
+
         expect(unverified_skills).not_to include('Rails')
         expect(not_claimed_skills).not_to include('Rails')
       end
 
       it 'identifies unverified skills' do
         result = scanner.scan(jd_with_mixed_skills)
-        
-        unverified_skills = result[:unverified_skills].map { |s| s[:skill] }
-        
+
+        unverified_skills = result[:unverified_skills].pluck(:skill)
+
         expect(unverified_skills).to include('Elixir')
         expect(unverified_skills).to include('Phoenix')
       end
 
       it 'identifies not_claimed skills' do
         result = scanner.scan(jd_with_mixed_skills)
-        
-        not_claimed_skills = result[:not_claimed_skills].map { |s| s[:skill] }
-        
+
+        not_claimed_skills = result[:not_claimed_skills].pluck(:skill)
+
         expect(not_claimed_skills).to include('Kafka')
       end
 
       it 'provides appropriate messages for not_claimed skills' do
         result = scanner.scan(jd_with_mixed_skills)
-        
+
         kafka_flag = result[:not_claimed_skills].find { |s| s[:skill] == 'Kafka' }
-        
+
         expect(kafka_flag[:message]).to include('exposure-only')
         expect(kafka_flag[:action]).to eq('mention_as_exposure')
       end
 
       it 'provides appropriate messages for unverified skills' do
         result = scanner.scan(jd_with_mixed_skills)
-        
+
         elixir_flag = result[:unverified_skills].find { |s| s[:skill] == 'Elixir' }
-        
+
         expect(elixir_flag[:message]).to be_present
         expect(elixir_flag[:action]).to be_present
       end
@@ -197,4 +197,3 @@ RSpec.describe JobWizard::RulesScanner do
     end
   end
 end
-

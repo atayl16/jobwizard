@@ -3,20 +3,20 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  get 'up' => 'rails/health#show', as: :rails_health_check
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Root path
-  root 'applications#new'
+  # Root path - Dashboard is home
+  root 'dashboard#show'
 
   # Dashboard
   resource :dashboard, only: :show
 
-  # Applications - manual JD entry
-  resources :applications, only: [:new, :create, :show] do
+  # Applications - manual JD entry and list
+  resources :applications, only: %i[index new create show] do
     collection do
       post :quick_create
       post :prepare
@@ -34,9 +34,38 @@ Rails.application.routes.draw do
   end
 
   # Jobs - fetched job board
-  resources :jobs, only: [:index, :show] do
+  resources :jobs, only: %i[index show] do
+    collection do
+      post :fetch
+    end
+
     member do
       post :tailor
+      patch :applied
+      patch :exported
+      patch :ignore
+    end
+
+    resources :job_skill_assessments, only: %i[create update]
+  end
+
+  # Filters and settings
+  post 'filters/block_company', to: 'filters#block_company'
+
+  namespace :settings do
+    get :filters
+    resources :blocked_companies, only: %i[create destroy]
+  end
+
+  # AI features
+  namespace :ai do
+    resources :usages, only: [:index]
+
+    resources :jobs, only: [] do
+      member do
+        post :summarize
+        post :skills
+      end
     end
   end
 end

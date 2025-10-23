@@ -76,6 +76,43 @@
           </div>
         <% end %>
         
+        <% if @ai_enabled %>
+          <!-- AI Cost Tracker -->
+          <div class="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+            <div class="text-sm text-purple-800">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="font-semibold">AI Cost (MTD):</span> 
+                  <span class="text-lg font-bold">$<%= sprintf('%.2f', @ai_stats[:total_dollars]) %></span>
+                </div>
+                <%= link_to ai_usages_path, class: "text-xs text-purple-600 hover:text-purple-800 underline" do %>
+                  View Details →
+                <% end %>
+              </div>
+              <% if @ai_stats[:by_feature].any? %>
+                <div class="mt-2 text-xs text-purple-700">
+                  <% @ai_stats[:by_feature].first(3).each do |feature, cost_cents| %>
+                    <span class="inline-block mr-3">
+                      <%= feature.titleize %>: $<%= sprintf('%.2f', cost_cents / 100.0) %>
+                    </span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% elsif @ai_stats[:count] > 0 %>
+          <!-- AI Disabled but has history -->
+          <div class="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+            <div class="text-sm text-yellow-800">
+              <span class="font-semibold">AI Status:</span> Disabled (OPENAI_API_KEY not set)
+              <br>
+              <span class="text-xs text-yellow-600">
+                Historical cost: $<%= sprintf('%.2f', @ai_stats[:total_dollars]) %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+        
         <%= render 'suggested_jobs', job_postings: @job_postings %>
       </div>
 

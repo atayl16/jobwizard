@@ -57,3 +57,5 @@ echo "- Paste a job description and click 'Review Skills'"
 echo "- Verify the prepare page shows verified/unverified skills"
 echo "- Select skills and click 'Generate Documents'"
 echo "- Check the generated PDFs and output path"
+
+

@@ -34,9 +34,7 @@ module JobWizard
       scan_category(job_description, :info, result)
 
       # Check for unverified skills if enabled
-      if rules.dig('skill_verification', 'flag_unverified')
-        categorize_skills(job_description, result)
-      end
+      categorize_skills(job_description, result) if rules.dig('skill_verification', 'flag_unverified')
 
       result
     end
@@ -94,11 +92,11 @@ module JobWizard
       # 1. Verified: in skills[].name (with alias normalization)
       # 2. Not Claimed: in not_claimed_skills (exposure only)
       # 3. Unverified: neither verified nor not_claimed
-      
+
       potential_skills.each do |skill|
         # Normalize skill using aliases before checking
         normalized_skill = experience_loader.normalize_skill_name(skill)
-        
+
         if experience_loader.has_skill?(normalized_skill) || experience_loader.has_skill_with_alias?(skill)
           # Verified - skip, this is OK
           next
@@ -106,15 +104,15 @@ module JobWizard
           # Not claimed - flag as exposure only
           result[:not_claimed_skills] << {
             skill: skill,
-            message: "Skill mentioned but marked as exposure-only (not core competency)",
-            action: "mention_as_exposure"
+            message: 'Skill mentioned but marked as exposure-only (not core competency)',
+            action: 'mention_as_exposure'
           }
         else
           # Unverified - flag as unverified
           result[:unverified_skills] << {
             skill: skill,
-            message: rules.dig('skill_verification', 'message') || "Skill not in verified experience",
-            action: rules.dig('skill_verification', 'action') || "mark_as_not_claimed"
+            message: rules.dig('skill_verification', 'message') || 'Skill not in verified experience',
+            action: rules.dig('skill_verification', 'action') || 'mark_as_not_claimed'
           }
         end
       end

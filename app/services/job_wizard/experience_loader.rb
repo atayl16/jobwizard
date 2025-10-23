@@ -10,7 +10,7 @@ module JobWizard
   # 3. Old flat: skills: ["Rails", "PostgreSQL", ...]
   class ExperienceLoader
     VALID_LEVELS = %i[expert intermediate basic].freeze
-    
+
     # Skill aliases for normalization (common variations → canonical names)
     SKILL_ALIASES = {
       'rails' => 'Ruby on Rails',
@@ -76,22 +76,22 @@ module JobWizard
         basic: normalized_skills.select { |s| s[:level] == :basic }
       }
     end
-    
+
     # Normalize a skill name using aliases (e.g., "Rails" → "Ruby on Rails")
     # Returns the canonical name if alias exists, otherwise returns original name
     def normalize_skill_name(skill_name)
-      return skill_name if skill_name.nil? || skill_name.empty?
-      
+      return skill_name if skill_name.blank?
+
       normalized = skill_name.to_s.strip
       SKILL_ALIASES[normalized.downcase] || normalized
     end
-    
+
     # Check if a skill is in the not_claimed_skills list (case-insensitive)
     def not_claimed_skill?(skill_name)
       normalized = normalize_skill_name(skill_name)
       not_claimed_skills.any? { |nc| nc.downcase.include?(normalized.downcase) }
     end
-    
+
     # Enhanced skill check that uses aliases
     def has_skill_with_alias?(skill_name)
       normalized = normalize_skill_name(skill_name)

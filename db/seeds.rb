@@ -7,3 +7,29 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+# JobWizard Seeds
+# Run with: rails db:seed
+
+# Example blocked companies (commented out)
+# Uncomment and modify as needed
+
+# BlockedCompany.create!(
+#   name: 'CyberCoders',
+#   pattern: false,
+#   reason: 'Spam recruiter'
+# )
+
+# BlockedCompany.create!(
+#   name: '/.*recruiter.*/i',
+#   pattern: true,
+#   reason: 'Generic recruiter pattern'
+# )
+
+# BlockedCompany.create!(
+#   name: 'Robert Half',
+#   pattern: false,
+#   reason: 'Low quality placements'
+# )
+
+Rails.logger.debug 'JobWizard seeds loaded. Uncomment examples in db/seeds.rb to add blocked companies.'

@@ -6,9 +6,9 @@
 
 require_relative 'config/environment'
 
-puts "\n" + "=" * 80
-puts "Ruby/Rails Job Board Filter Sanity Check"
-puts "=" * 80 + "\n"
+puts "\n#{'=' * 80}"
+puts 'Ruby/Rails Job Board Filter Sanity Check'
+puts "#{'=' * 80}\n"
 
 # Initialize services
 rules = JobWizard::Rules.current
@@ -27,29 +27,28 @@ samples = [
   ['Financial Analyst', 'Excel, financial modeling, reports']
 ]
 
-puts "%-50s | %6s | %8s | %s" % ['Job Title', 'KEEP?', 'Score', 'Decision']
-puts "-" * 80
+puts 'Job Title                                          |  KEEP? |    Score | Decision'
+puts '-' * 80
 
 samples.each do |title, description|
   keep = filter.keep?(title: title, description: description)
   score = ranker.score(title: title, description: description)
-  decision = keep && score > 0 ? 'KEEP' : 'DROP'
-  
+  decision = keep && score.positive? ? 'KEEP' : 'DROP'
+
   keep_str = keep ? 'YES' : 'NO'
-  
+
   # Truncate title if too long
   display_title = title.length > 45 ? "#{title[0..42]}..." : title
-  
-  puts "%-50s | %6s | %8.2f | %s" % [display_title, keep_str, score, decision]
+
+  puts format('%-50s | %6s | %8.2f | %s', display_title, keep_str, score, decision)
 end
 
-puts "\n" + "=" * 80
-puts "Configuration Summary:"
-puts "=" * 80
+puts "\n#{'=' * 80}"
+puts 'Configuration Summary:'
+puts '=' * 80
 puts "Include keywords: #{rules.job_filters['include_keywords']&.join(', ')}"
 puts "Exclude keywords: #{rules.job_filters['exclude_keywords']&.first(5)&.join(', ')}..."
 puts "Require include match: #{rules.ranking['require_include_match']}"
 puts "Min keep score: #{rules.ranking['min_keep_score']}"
 puts "UI label: #{rules.ui['active_filter_label']}"
 puts "\n"
-

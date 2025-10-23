@@ -3,6 +3,36 @@
 class ApplicationsController < ApplicationController
   before_action :set_application, only: %i[show download_resume download_cover_letter]
 
+  # GET /applications
+  def index
+    @applications = Application.order(created_at: :desc)
+    
+    # Search
+    if params[:q].present?
+      query = params[:q]
+      @applications = @applications.where(
+        'company LIKE ? OR role LIKE ?',
+        "%#{query}%", "%#{query}%"
+      )
+    end
+    
+    # Filter by status
+    if params[:status].present?
+      @applications = @applications.where(status: params[:status])
+    end
+    
+    # Filter by date range
+    if params[:date_from].present?
+      @applications = @applications.where('created_at >= ?', params[:date_from])
+    end
+    if params[:date_to].present?
+      @applications = @applications.where('created_at <= ?', params[:date_to])
+    end
+    
+    # Pagination (25 per page)
+    @applications = @applications.page(params[:page]).per(25)
+  end
+
   # GET /applications/:id
   def show
     @flags = {
@@ -46,13 +76,22 @@ class ApplicationsController < ApplicationController
     )
 
     if @application.save
-      # Generate PDFs
+      # Generate PDFs using centralized service
       begin
-        generate_pdfs(@application)
-        @application.update(status: :generated)
+        result = JobWizard::ApplicationPdfGenerator.new(@application).generate!
+
+        # Store AI-generated unverified skills in flags if any
+        if result[:unverified_skills]&.any?
+          current_flags = @application.flags || {}
+          current_flags['unverified_skills'] ||= []
+          result[:unverified_skills].each do |skill|
+            current_flags['unverified_skills'] << { 'skill' => skill, 'source' => 'ai_writer' }
+          end
+          @application.update(flags: current_flags)
+        end
+
         redirect_to @application, notice: 'Application documents generated successfully!'
       rescue StandardError => e
-        @application.update(status: :error)
         redirect_to @application, alert: "Error generating PDFs: #{e.message}"
       end
     else
@@ -103,7 +142,8 @@ class ApplicationsController < ApplicationController
 
     # Build final skill list
     included_skills = selected_verified + selected_unverified
-    excluded_skills = (prepare_data[:verified_skills] + prepare_data[:unverified_skills]) - included_skills
+    prepare_data[:verified_skills]
+    prepare_data[:unverified_skills]
 
     # Scan for flags
     scanner = JobWizard::RulesScanner.new
@@ -119,17 +159,25 @@ class ApplicationsController < ApplicationController
     )
 
     if @application.save
-      # Generate PDFs with skill filtering
+      # Generate PDFs with skill filtering using centralized service
       begin
-        generate_pdfs_with_skills(@application, included_skills, excluded_skills)
-        @application.update(status: :generated)
+        result = JobWizard::ApplicationPdfGenerator.new(@application, allowed_skills: included_skills).generate!
+
+        # Store AI-generated unverified skills in flags if any
+        if result[:unverified_skills]&.any?
+          current_flags = @application.flags || {}
+          current_flags['unverified_skills'] ||= []
+          result[:unverified_skills].each do |skill|
+            current_flags['unverified_skills'] << { 'skill' => skill, 'source' => 'ai_writer' }
+          end
+          @application.update(flags: current_flags)
+        end
 
         # Clear session
         session.delete(:application_prepare)
 
         redirect_to @application, notice: 'Application documents generated successfully!'
       rescue StandardError => e
-        @application.update(status: :error)
         redirect_to @application, alert: "Error generating PDFs: #{e.message}"
       end
     else
@@ -166,10 +214,19 @@ class ApplicationsController < ApplicationController
     )
 
     if @application.save
-      # Generate PDFs
+      # Generate PDFs using centralized service
       begin
-        generate_pdfs(@application)
-        @application.update(status: :generated)
+        result = JobWizard::ApplicationPdfGenerator.new(@application).generate!
+
+        # Store AI-generated unverified skills in flags if any
+        if result[:unverified_skills]&.any?
+          current_flags = @application.flags || {}
+          current_flags['unverified_skills'] ||= []
+          result[:unverified_skills].each do |skill|
+            current_flags['unverified_skills'] << { 'skill' => skill, 'source' => 'ai_writer' }
+          end
+          @application.update(flags: current_flags)
+        end
 
         respond_to do |format|
           format.html { redirect_to root_path, notice: "✓ PDFs generated for #{company} - #{role}" }
@@ -185,7 +242,6 @@ class ApplicationsController < ApplicationController
           end
         end
       rescue StandardError => e
-        @application.update(status: :error)
         redirect_to root_path, alert: "Error generating PDFs: #{e.message}"
       end
     else
@@ -228,61 +284,6 @@ class ApplicationsController < ApplicationController
     else
       params[:job_description].to_s
     end
-  end
-
-  def generate_pdfs_with_skills(application, included_skills, _excluded_skills)
-    # Initialize services
-    builder = JobWizard::ResumeBuilder.new(
-      job_description: application.job_description,
-      allowed_skills: included_skills
-    )
-    manager = JobWizard::PdfOutputManager.new(
-      company: application.company,
-      role: application.role,
-      timestamp: Time.current
-    )
-
-    # Create directories
-    manager.ensure_directories!
-
-    # Generate and write PDFs
-    resume_pdf = builder.build_resume
-    cover_letter_pdf = builder.build_cover_letter
-
-    manager.write_resume(resume_pdf)
-    manager.write_cover_letter(cover_letter_pdf)
-
-    # Update latest symlink
-    manager.update_latest_symlink!
-
-    # Store output path
-    application.update(output_path: manager.display_path)
-  end
-
-  def generate_pdfs(application)
-    # Initialize services
-    builder = JobWizard::ResumeBuilder.new(job_description: application.job_description)
-    manager = JobWizard::PdfOutputManager.new(
-      company: application.company,
-      role: application.role,
-      timestamp: Time.current
-    )
-
-    # Create directories
-    manager.ensure_directories!
-
-    # Generate and write PDFs
-    resume_pdf = builder.build_resume
-    cover_letter_pdf = builder.build_cover_letter
-
-    manager.write_resume(resume_pdf)
-    manager.write_cover_letter(cover_letter_pdf)
-
-    # Update latest symlink
-    manager.update_latest_symlink!
-
-    # Store output path
-    application.update(output_path: manager.display_path)
   end
 
   def send_pdf(type)

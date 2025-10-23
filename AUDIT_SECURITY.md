@@ -376,3 +376,5 @@ params = {
 - 🟡 MEDIUM - Significant but requires specific conditions
 - 🟢 LOW - Defense-in-depth, minimal immediate risk
 
+
+
