@@ -30,7 +30,7 @@ Rails.application.routes.draw do
 
   # Files - dev-only reveal in Finder
   namespace :files do
-    post :reveal, to: 'files/reveal#create'
+    post :reveal, to: 'reveal#create'
   end
 
   # Jobs - fetched job board
