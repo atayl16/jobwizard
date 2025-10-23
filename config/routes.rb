@@ -42,8 +42,11 @@ Rails.application.routes.draw do
     member do
       post :tailor
       patch :applied
+      patch :rejected
       patch :exported
       patch :ignore
+      patch :snooze
+      patch :update_notes
     end
 
     resources :job_skill_assessments, only: %i[create update]

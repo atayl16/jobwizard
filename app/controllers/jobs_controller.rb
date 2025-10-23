@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class JobsController < ApplicationController
-  before_action :set_job, only: %i[show tailor applied exported ignore]
+  before_action :set_job, only: %i[show tailor applied rejected exported ignore snooze update_notes]
 
   # POST /jobs/fetch
   def fetch
@@ -96,6 +96,13 @@ class JobsController < ApplicationController
     redirect_to jobs_path, notice: 'Job marked as applied'
   end
 
+  # PATCH /jobs/:id/rejected
+  def rejected
+    reason = params[:reason]
+    @job.mark_rejected!(reason: reason)
+    redirect_to jobs_path, notice: 'Job marked as rejected'
+  end
+
   # PATCH /jobs/:id/exported
   def exported
     @job.mark_exported!
@@ -104,8 +111,26 @@ class JobsController < ApplicationController
 
   # PATCH /jobs/:id/ignore
   def ignore
-    @job.mark_ignored!
+    reason = params[:reason]
+    @job.mark_ignored!(reason: reason)
     redirect_to jobs_path, notice: 'Job ignored'
+  end
+
+  # PATCH /jobs/:id/snooze
+  def snooze
+    datetime = params[:snooze_until]
+    if datetime.present?
+      @job.snooze_until!(DateTime.parse(datetime))
+      redirect_to jobs_path, notice: 'Job snoozed'
+    else
+      redirect_to jobs_path, alert: 'Invalid date'
+    end
+  end
+
+  # PATCH /jobs/:id/update_notes
+  def update_notes
+    @job.update!(notes: params[:notes])
+    render json: { success: true }
   end
 
   private
