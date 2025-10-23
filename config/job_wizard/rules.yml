@@ -146,6 +146,22 @@ job_filters_ruby:
     - "ruby engineer"
     - "backend ruby"
     - "full stack ruby"
+    - python
+    - django
+    - flask
+    - backend
+    - engineer
+    - developer
+    - software
+    - developer
+    - programmer
+    - remote
+    - "software engineer"
+    - "backend engineer"
+    - api
+    - rest
+    - "full stack"
+    - fullstack
   exclude_keywords:
     # Non-dev roles
     - accountant
@@ -215,7 +231,7 @@ scoring_ruby:
 # Ranking thresholds for job board
 ranking_ruby:
   min_keep_score: 1.0
-  require_include_match: true
+  require_include_match: false  # Allow jobs without explicit Ruby/Rails mention
 
 # UI labels for active filter state
 ui_ruby:
@@ -248,9 +264,8 @@ filters:
     - "ts/sci"
     - "dod clearance"
   # keep Ruby/Rails signal strong
-  required_keywords:
-    - "ruby"
-    - "rails"
+  # Note: required_keywords removed to allow more jobs through
+  # Jobs will still be filtered by exclude_keywords and location restrictions
   excluded_keywords:
     - "php"
     - "dotnet"

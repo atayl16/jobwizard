@@ -20,6 +20,41 @@ sources:
     name: Instacart
     active: true
 
+  - provider: greenhouse
+    slug: gitlab
+    name: GitLab
+    active: true
+
+  - provider: greenhouse
+    slug: shopify
+    name: Shopify
+    active: true
+
+  - provider: greenhouse
+    slug: github
+    name: GitHub
+    active: true
+
+  - provider: greenhouse
+    slug: stripe
+    name: Stripe
+    active: true
+
+  - provider: greenhouse
+    slug: coinbase
+    name: Coinbase
+    active: true
+
+  - provider: greenhouse
+    slug: dropbox
+    name: Dropbox
+    active: true
+
+  - provider: greenhouse
+    slug: reddit
+    name: Reddit
+    active: true
+
   # Lever companies  
   - provider: lever
     slug: figma
@@ -29,6 +64,38 @@ sources:
   - provider: lever
     slug: netflix
     name: Netflix
+    active: true
+
+  - provider: lever
+    slug: canva
+    name: Canva
+    active: true
+
+  - provider: lever
+    slug: notion
+    name: Notion
+    active: true
+
+  - provider: lever
+    slug: airtable
+    name: Airtable
+    active: true
+
+  - provider: lever
+    slug: postman
+    name: Postman
+    active: true
+
+  # RemoteOK - already have this fetcher
+  - provider: remoteok
+    slug: _
+    name: RemoteOK
+    active: true
+
+  # Remotive - already have this fetcher
+  - provider: remotive
+    slug: _
+    name: Remotive
     active: true
 
   # SmartRecruiters companies
