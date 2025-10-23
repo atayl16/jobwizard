@@ -45,6 +45,12 @@ module JobWizard
         status: :generated
       )
 
+      # Auto-mark job as applied if enabled
+      if ENV['JOB_WIZARD_AUTO_MARK_APPLIED'] == 'true' && job_posting&.suggested?
+        job_posting.mark_applied!
+        Rails.logger.info "Auto-marked job #{job_posting.id} as applied after PDF generation"
+      end
+
       # Return paths and unverified skills for convenience
       {
         resume: manager.resume_path,
