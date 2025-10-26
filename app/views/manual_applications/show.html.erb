@@ -1,0 +1,55 @@
+<% content_for :title, "View Manual Application" %>
+
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <div class="mb-6">
+    <%= link_to "← Back to Applications", manual_applications_path, class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+    <div class="flex items-start justify-between mb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @application.position %></h1>
+        <p class="text-xl text-gray-700 mb-2"><%= @application.company.present? ? @application.company : "Unknown" %></p>
+        <div class="flex items-center gap-3 text-sm text-gray-600">
+          <span>Applied on <%= @application.applied_at&.strftime("%B %d, %Y") %></span>
+          <span class="px-2 py-1 rounded text-xs font-medium <%= case @application.status 
+            when 'submitted' then 'bg-blue-100 text-blue-800'
+            when 'under_review' then 'bg-yellow-100 text-yellow-800'
+            when 'rejected' then 'bg-red-100 text-red-800'
+            when 'accepted' then 'bg-green-100 text-green-800'
+            when 'offer' then 'bg-purple-100 text-purple-800'
+            else 'bg-gray-100 text-gray-800'
+            end %>">
+            <%= @application.status.titleize %>
+          </span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <%= link_to "Edit", edit_manual_application_path(@application), class: "px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition-colors" %>
+        <%= button_to "Delete", manual_application_path(@application), method: :delete, 
+                      confirm: "Are you sure you want to delete this application?",
+                      class: "px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors" %>
+      </div>
+    </div>
+
+    <% if @application.job_url.present? %>
+      <div class="mb-4">
+        <%= link_to "View Job Posting", @application.job_url, target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 inline-flex items-center gap-2" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          Open in new tab
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @application.notes.present? %>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Notes</h2>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p class="text-gray-700 whitespace-pre-line"><%= @application.notes %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

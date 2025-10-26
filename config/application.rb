@@ -31,10 +31,8 @@ module JobWizard
     
     if queue_adapter == 'sidekiq' && defined?(Sidekiq)
       config.active_job.queue_adapter = :sidekiq
-      Rails.logger.info "Using Sidekiq for ActiveJob"
     else
       config.active_job.queue_adapter = :async
-      Rails.logger.info "Using async adapter for ActiveJob"
     end
   end
 end

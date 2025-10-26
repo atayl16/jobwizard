@@ -1,0 +1,32 @@
+
+== Brakeman Report ==
+
+Application Path: /Users/alishataylor/Dev/JobWizard
+Rails Version: 8.0.3
+Brakeman Version: 7.1.0
+Scan Date: 2025-10-23 21:18:45 +0100
+Duration: 0.703999 seconds
+Checks Run: BasicAuth, BasicAuthTimingAttack, CSRFTokenForgeryCVE, ContentTag, CookieSerialization, CreateWith, CrossSiteScripting, DefaultRoutes, Deserialize, DetailedExceptions, DigestDoS, DynamicFinders, EOLRails, EOLRuby, EscapeFunction, Evaluation, Execute, FileAccess, FileDisclosure, FilterSkipping, ForgerySetting, HeaderDoS, I18nXSS, JRubyXML, JSONEncoding, JSONEntityEscape, JSONParsing, LinkTo, LinkToHref, MailTo, MassAssignment, MimeTypeDoS, ModelAttrAccessible, ModelAttributes, ModelSerialize, NestedAttributes, NestedAttributesBypass, NumberToCurrency, PageCachingCVE, Pathname, PermitAttributes, QuoteTableName, Ransack, Redirect, RegexDoS, Render, RenderDoS, RenderInline, ResponseSplitting, RouteDoS, SQL, SQLCVEs, SSLVerify, SafeBufferManipulation, SanitizeConfigCve, SanitizeMethods, SelectTag, SelectVulnerability, Send, SendFile, SessionManipulation, SessionSettings, SimpleFormat, SingleQuotes, SkipBeforeFilter, SprocketsPathTraversal, StripTags, SymbolDoSCVE, TemplateInjection, TranslateBug, UnsafeReflection, UnsafeReflectionMethods, ValidationRegex, VerbConfusion, WeakRSAKey, WithoutProtection, XMLDoS, YAMLParsing
+
+== Overview ==
+
+Controllers: 10
+Models: 7
+Templates: 17
+Errors: 0
+Security Warnings: 1
+
+== Warning Types ==
+
+Cross-Site Scripting: 1
+
+== Warnings ==
+
+Confidence: Weak
+Category: Cross-Site Scripting
+Check: LinkToHref
+Message: Potentially unsafe model attribute in `link_to` href
+Code: link_to("Apply on Company Site \u2192", JobPosting.find(params[:id]).url, :target => "_blank", :rel => "noopener noreferrer", :class => "px-6 py-3 text-white font-semibold rounded-lg transition-colors text-center", :style => "background-color: #16a34a;")
+File: app/views/jobs/show.html.erb
+Line: 24
+

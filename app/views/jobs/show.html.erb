@@ -42,9 +42,9 @@
         <% end %>
         
         <div class="flex gap-2 mt-2">
-          <%= button_to "Applied", applied_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors" %>
-          <%= button_to "Reject", rejected_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors" %>
-          <%= button_to "Ignore", ignore_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors" %>
+          <%= button_to "Applied", applied_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 text-sm font-semibold rounded transition-colors", style: "background-color: #16a34a; color: white;" %>
+          <%= button_to "Reject", rejected_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 text-sm font-semibold rounded transition-colors", style: "background-color: #dc2626; color: white;" %>
+          <%= button_to "Ignore", ignore_job_path(@job), method: :patch, class: "flex-1 px-4 py-2 text-sm font-semibold rounded transition-colors", style: "background-color: #4b5563; color: white;" %>
         </div>
       </div>
     </div>

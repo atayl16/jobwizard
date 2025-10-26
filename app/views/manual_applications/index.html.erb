@@ -1,0 +1,81 @@
+<% content_for :title, "Manual Applications" %>
+
+<div class="max-w-6xl mx-auto py-8 px-4">
+  <div class="mb-6 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Manual Applications</h1>
+      <p class="text-gray-600">Track jobs you applied for outside the job board</p>
+    </div>
+    <%= link_to "Add Application", new_manual_application_path, class: "px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <div class="mb-6 border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8">
+      <%= link_to "All (#{@applications.count})", manual_applications_path, 
+                  class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status].blank? ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" %>
+      
+      <% @status_counts.each do |status, count| %>
+        <%= link_to "#{status.titleize} (#{count})", manual_applications_path(status: status), 
+                    class: "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm #{params[:status] == status ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}" %>
+      <% end %>
+    </nav>
+  </div>
+
+  <% if @applications.any? %>
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applied Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @applications.each do |application| %>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900"><%= application.company.present? ? application.company : "Unknown" %></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-900"><%= application.position %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= application.applied_at&.strftime("%b %d, %Y") %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 rounded text-xs font-medium <%= case application.status 
+                  when 'submitted' then 'bg-blue-100 text-blue-800'
+                  when 'under_review' then 'bg-yellow-100 text-yellow-800'
+                  when 'rejected' then 'bg-red-100 text-red-800'
+                  when 'accepted' then 'bg-green-100 text-green-800'
+                  when 'offer' then 'bg-purple-100 text-purple-800'
+                  else 'bg-gray-100 text-gray-800'
+                  end %>">
+                  <%= application.status.titleize %>
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-500 max-w-md truncate"><%= application.notes %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <%= link_to "View", manual_application_path(application), class: "text-blue-600 hover:text-blue-900 mr-3" %>
+                <%= link_to "Edit", edit_manual_application_path(application), class: "text-gray-600 hover:text-gray-900" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-12 text-center">
+      <p class="text-gray-600 text-lg mb-2">No applications tracked yet</p>
+      <p class="text-gray-500 text-sm">Add your first application to start tracking</p>
+      <%= link_to "Add Application", new_manual_application_path, class: "inline-block mt-4 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors" %>
+    </div>
+  <% end %>
+</div>

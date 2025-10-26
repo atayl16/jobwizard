@@ -239,3 +239,4 @@ RSpec.describe JobWizard::PdfOutputManager do
     end
   end
 end
+

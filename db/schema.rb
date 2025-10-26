@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_23_205851) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_26_184810) do
   create_table "ai_usages", force: :cascade do |t|
     t.string "model", null: false
     t.string "feature", null: false
@@ -107,6 +107,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_23_205851) do
     t.datetime "updated_at", null: false
     t.index ["active"], name: "index_job_sources_on_active"
     t.index ["provider", "slug"], name: "index_job_sources_on_provider_and_slug", unique: true
+  end
+
+  create_table "manual_applications", force: :cascade do |t|
+    t.string "company"
+    t.string "position"
+    t.date "applied_at"
+    t.string "status"
+    t.text "notes"
+    t.string "job_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "applications", "job_postings"

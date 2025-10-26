@@ -28,6 +28,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Manual Applications - track jobs applied outside job board
+  resources :manual_applications
+
   # Files - dev-only reveal in Finder
   namespace :files do
     post :reveal, to: 'reveal#create'

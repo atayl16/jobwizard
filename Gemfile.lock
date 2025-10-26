@@ -391,6 +391,8 @@ GEM
       faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     rubyzip (3.2.0)
+    rufus-scheduler (3.9.2)
+      fugit (~> 1.1, >= 1.11.1)
     securerandom (0.4.1)
     selenium-webdriver (4.37.0)
       base64 (~> 0.2)
@@ -526,6 +528,7 @@ DEPENDENCIES
   rubocop-rails-omakase
   rubocop-rspec
   ruby-openai
+  rufus-scheduler
   selenium-webdriver
   simplecov
   solid_cable

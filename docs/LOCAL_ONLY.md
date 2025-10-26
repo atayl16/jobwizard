@@ -142,3 +142,4 @@ mkdir -p ~/Documents/JobWizard
 ---
 
 *AUTOPILOT Mode: Local-first development*
+

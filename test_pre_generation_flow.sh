@@ -59,3 +59,4 @@ echo "- Select skills and click 'Generate Documents'"
 echo "- Check the generated PDFs and output path"
 
 
+
