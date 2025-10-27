@@ -18,5 +18,5 @@ PrePush:
   BundleAudit:
     enabled: true
     required_executable: 'bundler-audit'
-    command: ['bundle', 'exec', 'bundler-audit', 'check', '--update']
+    command: ['bundle', 'exec', 'bundler-audit', 'check']
 
