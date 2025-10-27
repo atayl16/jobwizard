@@ -36,3 +36,4 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 .env
+config/job_wizard/profile.yml
