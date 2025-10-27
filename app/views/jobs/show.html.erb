@@ -31,7 +31,7 @@
         </div>
       </div>
       <div class="flex flex-col gap-3">
-        <%= link_to "Apply on Company Site →", @job.url, target: "_blank", rel: "noopener noreferrer", class: "px-6 py-3 text-white font-semibold rounded-lg transition-colors text-center", style: "background-color: #16a34a;" %>
+        <%= link_to "Apply on Company Site →", @job.url.to_s, target: "_blank", rel: "noopener noreferrer", class: "px-6 py-3 text-white font-semibold rounded-lg transition-colors text-center", style: "background-color: #16a34a;" %>
         
         <% if @job.generated_today? %>
           <div class="px-6 py-3 bg-green-100 text-green-800 font-semibold rounded-lg text-center">
