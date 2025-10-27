@@ -1,0 +1,66 @@
+# Personal profile for resume/cover generation — truth-only
+# Copy this file to profile.yml and fill in your own information
+
+name: "Your Name"
+email: "your.email@example.com"
+phone: ""  # optional
+location: "Your Location"
+linkedin: "https://www.linkedin.com/in/yourprofile"
+github: "https://github.com/yourusername"
+website: "https://yourwebsite.com"
+
+summary: |
+  Your professional summary here.
+  Describe your experience and strengths.
+
+core_skills:
+  - Skill 1
+  - Skill 2
+  # Add your skills
+
+soft_skills:
+  - Collaboration
+  - Problem Solving
+  # Add your soft skills
+
+education:
+  - degree: "Your Degree"
+    institution: "Your University"
+    year:
+    honors: "Optional honors or additional info"
+
+certifications: []
+
+languages:
+  - name: "English"
+    level: "Native"
+
+# Writing preferences to steer tone in cover letters
+writing_preferences:
+  tone: "warm, concise, confident, human"
+  avoid_phrases:
+    - "I am writing to express my interest"
+    - "I believe I am the perfect fit"
+  closing_signature: "Best regards,\nYour Name"
+  paragraph_rules:
+    - "2–3 short paragraphs max"
+    - "First paragraph: align impact to role"
+    - "Second paragraph: 1–2 concrete achievements"
+    - "Close with availability"
+
+# Resume layout preferences
+resume_preferences:
+  show_phone: false
+  show_location: true
+  section_order:
+    - "summary"
+    - "experience"
+    - "projects"
+    - "skills"
+  emphasize_levels: true
+
+# Filesystem UX preferences
+output_preferences:
+  path_style: "simple"
+  include_symlink_latest: true
+
